@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OutreachHub - Sign Up</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fcdfd1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .signup-container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    .signup-container h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .signup-container p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .signup-container input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .signup-container button {
+      width: 100%;
+      padding: 12px;
+      background-color: #d63384;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .signup-container a {
+      color: #d63384;
+      text-decoration: none;
+    }
+    .signup-container p.small {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <form class="signup-form" onsubmit="return handleSubmit(event)">
+      <h2>Get Started</h2>
+      <p>Create your OutreachHub account</p>
+
+      <input type="text" placeholder="Full Name" id="name" name="name" required minlength="2">
+      
+      <input type="email" placeholder="Email" id="email" name="email" required 
+             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" 
+             title="Enter a valid email address (e.g., name@example.com)">
+      
+      <input type="tel" placeholder="Mobile Number" id="mobile" name="mobile" required 
+             pattern="[0-9]{10}" maxlength="10" 
+             title="Enter a valid 10-digit mobile number">
+      
+      <input type="password" placeholder="Password" id="password" name="password" required minlength="6">
+      
+      <input type="password" placeholder="Confirm Password" id="confirm-password" required>
+
+      <button type="submit" >Sign Up</button>
+      <p class="small">Already have an account? <a href="login.html">Login</a></p>
+    </form>
+  </div>
+
+  <script>
+  function handleSubmit(event) {
+    event.preventDefault(); // prevent form from submitting the default way
+
+    const password = document.querySelector('#password').value;
+    const confirmPassword = document.querySelector('#confirm-password').value;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return false;
+    }
+
+    // Redirect to login.html
+    window.location.href = "./login.html";
+    return false;
+  }
+</script>
+
+</body>
+</html>

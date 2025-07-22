@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OutreachHub - Home</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fdf6f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d63384;
+        }
+
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #d63384;
+        }
+        nav a:hover:not(.button) {
+            color: #d63384;
+        }
+
+        .button{
+            background-color: #d63384;  /* pink tone */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover{
+            background-color: #b8256e; 
+            color: #ffffff;
+
+        }
+
+        .main-section {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .main-section h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .main-section button {
+            background-color: #d63384;
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-size: 16px;
+            /* border-radius: 25px; */
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .charts-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 40px;
+            gap: 30px;
+        }
+
+        .chart-box {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 30%;
+            padding: 20px;
+            overflow: hidden;
+        }
+        .chart-box .img{
+            width: 90%;
+            height: 90%;
+            object-fit: cover; 
+            /* display: block; */
+            padding: 0px;
+        }
+
+        .tables-section {
+            padding: 40px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            background-color: #f8d7e4;
+            color: #8a0032;
+        }
+
+        footer {
+            background-color: #d63384;
+            text-align: center;
+            padding: 20px;
+            color:#ffffff;
+            margin-top: 40px;
+        }
+    
+.accordian{
+    width: 55%;
+    background-color: white;
+    padding: 30px;
+    border-radius: 30px;
+    position: relative;
+    left: 20%;
+}
+.accordian .accordian-title{
+    margin-bottom: 30px;
+    text-align: center;
+
+}
+.accordian .content-container .question{
+    padding: 18px 0px;
+    cursor: pointer;
+    border-bottom: 1px solid black;
+    position: relative;
+}
+.accordian .content-container .question::after{
+    content: '+';
+    position: absolute;
+    right: -5px;
+}
+
+.accordian .content-container .answer{
+    padding-top: 15px;
+    font-size: 22px;
+    line-height: 1.5;
+    width: 100%;
+    height: 0px;
+    overflow: hidden;
+    transition: .5s;
+}
+
+.accordian .content-container.active .answer{
+    height: 150px;
+}
+.accordian .content-container.active .question{
+    font-size: 18px;
+    transition: .5s;
+}
+
+.accordian .content-container.active .question::after{
+    content: '-';
+    font-size: 30px;
+    transition: .5s;
+} 
+
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">OutreachHub</div>
+    <nav>
+        <a href="#">Home</a>
+        <a href="contacts.html" >Contacts</a>
+        <a href="#">Templates</a>
+        <a href="#">Campaigns</a>
+        <a href="#">About Us</a>
+        <a class="button" href="login.html">Logout</a>
+    </nav>
+</header>
+
+<div class="main-section">
+    <h2 id="welcome-msg"></h2>
+    <h1>Grow Your Outreach with OutreachHub</h1>
+    <p>Smart CRM tools for boosting your campaign productivity and impact.</p>
+    <button class="button">Explore Dashboard</button>
+</div>
+
+<section class="charts-section">
+    <div class="chart-box">
+        <h3>Campaigns Per Day</h3>
+        <img class="img" src="/images/campains.png" alt="Chart 1">
+    </div>
+    <div class="chart-box">
+        <h3>Messages Sent by Type</h3>
+        <img class="img" src="/images/messages.png" alt="Chart 2">
+    </div>
+    <div class="chart-box">
+        <h3>Contacts Reached</h3>
+        <img class="img" src="/images/contacts.png" alt="Chart 3">
+    </div>
+</section>
+
+<section class="tables-section">
+    <div style="width: 45%;">
+        <h3>Recent Campaigns</h3>
+        <table>
+            <thead>
+                <tr><th>Campaign</th><th>Tags</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Welcome Blast</td><td>Intro, New</td></tr>
+                <tr><td>Promo 1</td><td>Discount, Email</td></tr>
+                <tr><td>Reactivation</td><td>Old, SMS</td></tr>
+                <tr><td>Survey Invite</td><td>Feedback</td></tr>
+                <tr><td>Flash Sale</td><td>Urgent</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="width: 45%;">
+        <h3>Top Tags by Contacts</h3>
+        <table>
+            <thead>
+                <tr><th>Tag</th><th>Contact Count</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Promo</td><td>1,245</td></tr>
+                <tr><td>Newsletter</td><td>980</td></tr>
+                <tr><td>Feedback</td><td>860</td></tr>
+                <tr><td>Active</td><td>745</td></tr>
+                <tr><td>Lead</td><td>710</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+<div class="accordian">
+    <h2 class="accordian-title">Frequently Asked Questions</h2>
+
+    <div class="content-container">
+        <div class="question">What is OutreachHub?</div>
+        <div class="answer">OutreachHub is a platform that helps individuals and organizations plan, launch, and manage outreach campaigns. Whether you're reaching out for sales, partnerships, PR, or influencer collaborations, OutreachHub streamlines the entire process—from contact management to follow-ups.</div>
+    </div>
+    <div class="content-container">
+        <div class="question"> Who is OutreachHub for?</div>
+        <div class="answer"> outreachhub is ideal for: sales and business development teams,
+            influencer market, pr professionals, startups, large-scale organizations, advocacy groups and many more </div>
+    </div>
+    <div class="content-container">
+        <div class="question">What kind of analytics does OutreachHub offer?</div>
+        <div class="answer">Charts:
+                1. Number of campaigns done per day filterable by date range
+                2. Number of campaign messages sent per message type per day filterable by date
+                range
+                3. Number of contacts reached per day filterable by date range
+                Tables:
+                1. List of recent 5 campaigns with targeted contacts tags
+                2. List of top 5 tags with highest number of contacts </div>
+    </div>
+</div>
+
+<footer>
+    &copy; 2025 OutreachHub. All rights reserved.
+</footer>
+<script>
+       if (document.querySelector("#welcome-msg")) {
+  const email = localStorage.getItem("loggedInEmail");
+
+  if (email) {
+    const username = email.split("@")[0];
+    document.querySelector("#welcome-msg").innerHTML = `Welcome ${username}!`;
+  } 
+}
+
+const accordian= document.querySelectorAll('.content-container');
+
+for(i=0; i< accordian.length; i++){
+  accordian[i].addEventListener('click',  function(){
+    this.classList.toggle('active');
+  });
+};
+
+</script>
+</body>
+</html>

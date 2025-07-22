@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OutreachHub - Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      margin: 0;
+    }
+    .left {
+      flex: 1;
+      background-color: #f0f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .left img {
+      width:100%;
+      height: 100%;
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* background-color: #fcdfd1; */
+      background-color: white;
+    }
+    .login-form {
+      width: 80%;
+      max-width: 400px;
+    }
+    .login-form h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .login-form p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .login-form input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .login-form button {
+      width: 100%;
+      padding: 12px;
+      background-color: #d63384;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .login-form a {
+      color: #d63384;
+      text-decoration: none;
+    }
+    .login-form p.small {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <img src="/images/login.png" alt="OutreachHub Logo">
+  </div>
+  <div class="right">
+    <form class="login-form">
+      <h2>Welcome</h2>
+      <p>Login to your OutreachHub account</p>
+      <input type="email" placeholder="Email" id="email"required>
+      <input type="password" placeholder="Password" id="password"required>
+      <button type="submit" id="login-btn">Login</button>
+      <p class="small">Don't have an account? <a href="#">Sign up</a></p>
+    </form>
+  </div>
+  <script src="login.js"></script>
+</body>
+</html>
