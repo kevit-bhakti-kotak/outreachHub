@@ -289,15 +289,16 @@
     &copy; 2025 OutreachHub. All rights reserved.
 </footer>
 <script>
+    // JavaScript to handle welcome message
        if (document.querySelector("#welcome-msg")) {
-  const email = localStorage.getItem("loggedInEmail");
+  const name = localStorage.getItem("username");
 
-  if (email) {
-    const username = email.split("@")[0];
-    document.querySelector("#welcome-msg").innerHTML = `Welcome ${username}!`;
+
+  if (name) {
+    document.querySelector("#welcome-msg").textContent = `Welcome ${name}!`;
   } 
 }
-
+ // JavaScript for accordian functionality
 const accordian= document.querySelectorAll('.content-container');
 
 for(i=0; i< accordian.length; i++){
