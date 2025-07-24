@@ -347,7 +347,7 @@ let AuthService = class AuthService {
         await this.authTokenRepository.save(authToken);
         return {
             access_token,
-            expires_in: 3600,
+            expires_in: 36000,
             message: 'Login successful',
         };
     }
@@ -935,6 +935,7 @@ const common_1 = __webpack_require__(2);
 const app_module_1 = __webpack_require__(3);
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.enableCors();
     app.useGlobalPipes(new common_1.ValidationPipe({
         transform: true,
         whitelist: true,

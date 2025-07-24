@@ -1,77 +1,34 @@
 
-//   const contacts = JSON.parse(localStorage.getItem('contacts')) || []; //
+//  let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+const token = localStorage.getItem("token");
 
-//   contacts.forEach((contact, index) => renderContact(contact, index));
-
-//   document.querySelector('.btn').addEventListener("click", addContact);
-
-//   function addContact() {
-//     const name = document.getElementById('name').value.trim();
-//     const phone = document.getElementById('phone').value.trim();
-//     const tagsInput = document.getElementById('tags').value.trim();
-
-//     if (!name || !phone) {
-//       alert('Name and phone number are required.');
-//       return;
-//     }
-
-//     const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()) : [];
-//     const newContact = { name, phone, tags };
-//     contacts.push(newContact);
-//     localStorage.setItem('contacts', JSON.stringify(contacts));
-//     renderContact(newContact, contacts.length - 1);
-
-//     document.getElementById('name').value = '';
-//     document.getElementById('phone').value = '';
-//     document.getElementById('tags').value = '';
-//   }
-
-//   function renderContact(contact, index) {
-//     const tableBody = document.getElementById('contactsTable');
-//     const row = document.createElement('tr');
-
-//     const nameTd = document.createElement('td');
-//     nameTd.textContent = contact.name;
-
-//     const phoneTd = document.createElement('td');
-//     phoneTd.textContent = contact.phone;
-
-//     const tagsTd = document.createElement('td');
-//     tagsTd.innerHTML = contact.tags.map(tag => `<span class="tag">${tag}</span>`).join(' ');
-
-//     const actionsTd = document.createElement('td');
-//     actionsTd.className = 'actions';
-
-//     const editBtn = document.createElement('button');
-//     editBtn.textContent = 'Edit';
-//     editBtn.addEventListener('click', () => editContact(index));
-
-//     const deleteBtn = document.createElement('button');
-//     deleteBtn.textContent = 'Delete';
-//     deleteBtn.addEventListener('click', () => deleteContact(index));
-
-//     actionsTd.appendChild(editBtn);
-//     actionsTd.appendChild(deleteBtn);
-
-//     row.appendChild(nameTd);
-//     row.appendChild(phoneTd);
-//     row.appendChild(tagsTd);
-//     row.appendChild(actionsTd);
-
-//     tableBody.appendChild(row);
-//   }
-
-// //   function editContact(index) {
-// //     alert('Edit function for contact #' + index + ' goes here.');
-// //   }
-
-// //   function deleteContact(index) {
-// //     alert('Delete function for contact #' + index + ' goes here.');
-// //   }
+if (!token) {
+  alert("You must be logged in to view this page.");
+  window.location.href = "login.html";
+}
 
 
+let contacts = [];
 
- let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+async function fetchContacts() {
+  try{
+  const res = await fetch('http://localhost:3000/contacts', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+   const response = await res.json();
+   contacts = response.data;
+  
+  renderContacts();
+ }catch(err){
+  console.error('Error fetching contacts:', err);
+  alert('Failed to fetch contacts. Please try again later.');
+  localStorage.removeItem('jwt_token');
+  window.location.href = 'login.html';
+ } // display the data in the table
+}
+
     let editIndex = -1;
 
     document.getElementById('addContactBtn').addEventListener('click', () => toggleForm());
@@ -90,7 +47,7 @@
       if (edit && index >= 0) {
         const c = contacts[index];
         document.getElementById('name').value = c.name;
-        document.getElementById('phone').value = c.phone;
+        document.getElementById('phone').value = c.phoneNumber;
         document.getElementById('tags').value = c.tags.join(', ');
       } else {
         document.getElementById('name').value = '';
@@ -99,7 +56,7 @@
       }
     }
 
-    function submitContact() {
+    async function submitContact() {
       if (!confirm('Are you sure you want to save this contact?')) return;
 
       const name = document.getElementById('name').value.trim();
@@ -113,19 +70,35 @@
       }
 
       if (!phonePattern.test(phone)) {
-        alert('Please enter a valid phone number (10-15 digits, optionally starting with +).');
+        alert('Please enter a valid phone number.');
         return;
       }
 
-      const newContact = { name, phone, tags };
-      if (editIndex >= 0) {
-        contacts[editIndex] = newContact;
-      } else {
-        contacts.push(newContact);
-      }
+      const newContact = { name, phoneNumber:phone, tags };
+      // if (editIndex >= 0) {
+      //   contacts[editIndex] = newContact;
+      // } else {
+      //   contacts.push(newContact);
+      // }
+      if (editIndex >= 0)/**  if exisiting */ {
+    const contactId = contacts[editIndex].id;
+    await fetch(`http://localhost:3000/contacts/${contactId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(newContact)
+    });
+  } else {
+    await fetch(`http://localhost:3000/contacts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${token}` },
+      body: JSON.stringify(newContact)
+    });
+  }
 
-      localStorage.setItem('contacts', JSON.stringify(contacts));
-      renderContacts();
+      // localStorage.setItem('contacts', JSON.stringify(contacts));
+      // renderContacts();
+
+      await fetchContacts();
       document.getElementById('contactFormCard').style.display = 'none';
       document.getElementById('contactListCard').style.display = 'block';
     }
@@ -137,7 +110,7 @@
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>${contact.name}</td>
-          <td>${contact.phone}</td>
+          <td>${contact.phoneNumber}</td>
           <td>${contact.tags.map(tag => `<span class="tag">${tag}</span>`).join(' ')}</td>
           <td class="actions">
             <button data-index="${index}" class="editBtn">Edit</button>
@@ -155,16 +128,23 @@
         });
       });
 
-      document.querySelectorAll('.deleteBtn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const index = parseInt(e.target.getAttribute('data-index'));
-          if (confirm('Are you sure you want to delete this contact?')) {
-            contacts.splice(index, 1);
-            localStorage.setItem('contacts', JSON.stringify(contacts));
-            renderContacts();
-          }
-        });
+     document.querySelectorAll('.deleteBtn').forEach(btn => {
+  btn.addEventListener('click', async (e) => {
+    const index = parseInt(e.target.getAttribute('data-index'));
+    const contact = contacts[index];
+    if (confirm('Are you sure you want to delete this contact?')) {
+      await fetch(`http://localhost:3000/contacts/${contact.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
+      await fetchContacts();
+    }
+  });
+});
+
+
     }
 
-    renderContacts();
+    fetchContacts();
