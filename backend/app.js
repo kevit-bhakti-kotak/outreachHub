@@ -4,12 +4,12 @@ app.use(express.json());
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/users');
 const workspaceRoutes = require('./routes/workspaces');
-const contact = require('./models/contact');
+const contactRoutes = require('./routes/contacts.js');
 
 //userroutes here
 app.use('/users', userRoutes);
 app.use('/workspaces', workspaceRoutes);
-// app.use('/contacts', contactRoutes);
+app.use('/contacts', contactRoutes);
 
 const PORT = 5000;
 

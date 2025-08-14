@@ -10,4 +10,5 @@ router.post('/',verifyToken, userController.createUser);
 router.put('/:id', verifyToken, userController.updateUser);
 router.delete('/:id', verifyToken, userController.deleteUser);
 router.post('/login', userController.loginUser);
+router.post('/logout', verifyToken, userController.logoutUser);
 module.exports = router;

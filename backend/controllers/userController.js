@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const BlacklistedToken = require('../models/BlacklistedToken');
 
 const getAllUsers = async (req, res) => {
   try {
@@ -128,7 +129,21 @@ const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const logoutUser = async (req, res) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) return res.status(400).json({ message: 'No token provided' });
+
+    const decoded = jwt.decode(token);
+    const expiresAt = new Date(decoded.exp * 1000); // Convert to ms
+
+    await BlacklistedToken.create({ token, expiresAt });
+
+    res.status(200).json({ message: 'Logout successful, token invalidated' });
+  } catch (error) {
+    res.status(500).json({ message: 'Logout failed', error: error.message });
+  }
+};
 
 
-
-module.exports = {getAllUsers,getUserById, createUser,updateUser,deleteUser,loginUser};
+module.exports = {getAllUsers,getUserById, createUser,updateUser,deleteUser,loginUser,logoutUser};
