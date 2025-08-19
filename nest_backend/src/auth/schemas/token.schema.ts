@@ -15,3 +15,4 @@ export class Token extends Document {
 
 export const TokenSchema = SchemaFactory.createForClass(Token);
 TokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
