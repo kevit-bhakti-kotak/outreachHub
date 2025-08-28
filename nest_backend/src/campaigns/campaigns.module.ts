@@ -4,9 +4,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CampaignsService } from './campaigns.service';
 import { CampaignsController } from './campaigns.controller';
 import { Campaign, CampaignSchema } from './schemas/campain.schema';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Campaign.name, schema: CampaignSchema }])],
+  imports: [MongooseModule.forFeature([{ name: Campaign.name, schema: CampaignSchema }]),AuthModule],
   controllers: [CampaignsController],
   providers: [CampaignsService],
 })
