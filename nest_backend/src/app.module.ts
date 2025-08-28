@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
+import { MessageTemplatesModule } from './message-templates/message-templates.module';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { CampaignsModule } from './campaigns/campaigns.module';
 
     MongooseModule.forRoot(
   process.env.MONGO_URI ?? 'mongodb://localhost:27017/outreachhub',),
-    UsersModule, AuthModule, ContactsModule, WorkspacesModule, CampaignsModule,
+    UsersModule, AuthModule, ContactsModule, WorkspacesModule, CampaignsModule, MessageTemplatesModule,
   ],
 })
 export class AppModule {}
