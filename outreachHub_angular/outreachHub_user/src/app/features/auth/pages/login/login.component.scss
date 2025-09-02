@@ -1,0 +1,149 @@
+
+
+// :host {
+//   display: block;
+// }
+
+// /* Layout */
+// .login-container {
+//   display: flex;
+//   width: 100%;
+//   min-height: 100vh;
+// }
+
+
+// /* LEFT - image panel */
+// .left {
+//   flex: 1;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   background-color: #f0f4f8;
+//   overflow: hidden;
+// }
+
+// .left img {
+//   width: 100%;
+//   height: 100%;
+//   object-fit: cover;
+//   display: block;
+//   max-width: none;
+// }
+
+// /* RIGHT - form panel */
+// .right {
+//   flex: 1;
+//   display: flex;
+//   display: flex;               /* make flex always */
+//   align-items: center;         /* vertical center */
+//   justify-content: center;     /* horizontal center */
+//   padding: 2rem;
+//   background: transparent; /* desktop: form card provides white background */
+// }
+
+// /* Form card */
+// .login-form {
+//   width: 100%;
+//   max-width: 350px;
+//   display: flex;
+//   flex-direction: column;
+//   background: rgba(255, 255, 255, 0.95);
+//   padding: 2rem;
+//   border-radius: 10px;
+//   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+// }
+
+// .login-form h2 {
+//   margin-bottom: 0.5rem;
+//   font-size: 1.8rem;
+//   font-weight: 700;
+//   text-align: center;
+// }
+
+// .login-form p {
+//   margin-bottom: 1.2rem;
+//   color: #666;
+//   font-size: 0.94rem;
+//   text-align: center;
+// }
+
+// .login-form input {
+//   width: 100%;
+//   padding: 0.75rem;
+//   margin-bottom: 1rem;
+//   border: 1px solid #ccc;
+//   border-radius: 6px;
+//   font-size: 1rem;
+//   box-sizing: border-box;
+// }
+
+// .login-form button {
+//   width: 100%;
+//   padding: 0.75rem;
+//   border-radius: 6px;
+//   font-size: 1rem;
+//   font-weight: 700;
+//   cursor: pointer;
+//   border: 1px solid #d63384;
+//   background-color: #d63384; /* pink */
+//   color: #fff;
+//   transition: background-color 0.2s ease;
+//   box-sizing: border-box;
+// }
+
+// .login-form button:hover {
+//   background-color: #e23377; /* slightly darker pink */
+// }
+// .error {
+//   font-size: 0.75rem;   
+//   color:red ;       
+//   margin-top: -0.75rem;  /* pull closer to input */
+//   margin-bottom: 0.75rem;
+// }
+
+// /* ---- Responsive: hide image & show gradient ---- */
+// @media (max-width: 768px) {
+//   .login-container {
+//     flex-direction: column;
+//     min-height: 100vh;
+//     display: flex;
+//     align-items: center; 
+//     justify-content: center; 
+
+//     /* apply gradient to container (this is inside component, so it works) */
+//     background: linear-gradient(135deg, #ffc0cb 0%, #ffe4e1 100%);
+//   }
+
+//   .left {
+//     display: none;
+//   }
+
+//   .right {
+//     flex: unset;          /* remove flex growth */
+//     width: 100%;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     background: transparent;
+//     min-height: auto;     /* avoid stretching weirdly */
+//     padding: 1rem;
+//   }
+
+//   .login-form {
+//     margin: 0 auto;              
+//     width: 100%;
+//     max-width: 320px;
+//   }
+// }
+
+// /* tiny screens tweak */
+// @media (max-width: 420px) {
+//   .login-form {
+//     padding: 1.25rem;
+//     max-width: 280px;
+//   }
+
+//   .login-form h2 {
+//     font-size: 1.5rem;
+//   }
+// }

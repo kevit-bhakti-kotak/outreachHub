@@ -1,0 +1,31 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms'; 
+import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+
+@NgModule({
+  declarations: [
+    AuthLayoutComponent,
+    MainLayoutComponent,
+    HeaderComponent,
+    FooterComponent,
+    SidebarComponent
+  ],
+  imports: [
+    CommonModule,
+    RouterModule,FormsModule // for routerLink usage inside header/sidebar if needed
+  ],
+  exports: [
+    AuthLayoutComponent,
+    MainLayoutComponent,
+    HeaderComponent,
+    FooterComponent,
+    SidebarComponent
+  ]
+})
+export class SharedModule {}
