@@ -10,6 +10,12 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   logger.log('Application starting...');
 
+  app.enableCors({
+    origin: 'http://localhost:4200', // Angular dev server
+    credentials: true,
+  });
+
+
   await app.listen(2000);
   logger.log(`Application is running on: ${await app.getUrl()}`);
 }
