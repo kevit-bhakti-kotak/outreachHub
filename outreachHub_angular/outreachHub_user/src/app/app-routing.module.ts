@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AuthLayoutComponent } from './shared/layouts/auth-layout/auth-layout.component';
 import { MainLayoutComponent } from './shared/layouts/main-layout/main-layout.component';
+import { AuthGuard } from './core/guards/auth.guard';
 // import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
@@ -23,12 +24,12 @@ const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [AuthGuard], 
     children: [
       { path: 'home', loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule) },
       // later add: { path: 'contacts', loadChildren: () => import('./features/contacts/contacts.module').then(m => m.ContactsModule) },
       // { path: 'campaigns', loadChildren: () => import('./features/campaigns/campaigns.module').then(m => m.CampaignsModule) }
     ],
-    // canActivate: [AuthGuard] // enable this when you add AuthGuard & want to protect all children
   },
 
   // fallback
