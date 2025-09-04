@@ -1,10 +1,9 @@
 <header class="oh-header fixed top-0 left-0 right-0 z-40 transition-all duration-300"
         [class.scrolled]="isScrolled">
 
-  <!-- inner container shifts right to align with sidebar -->
   <div
     [ngClass]="{ 'ml-64': isSidebarOpen, 'ml-20': !isSidebarOpen }"
-    class="oh-header__inner transition-all duration-300 flex justify-between items-center px-4 sm:px-6 lg:px-8">
+    class="oh-header__inner transition-all duration-300 flex items-center justify-between px-4 sm:px-6 lg:px-8">
 
     <!-- Left: Welcome + date/time -->
     <div class="flex flex-col leading-tight min-w-0">
@@ -16,38 +15,35 @@
       </div>
     </div>
 
-    <!-- Right: Logout (text on md+, icon on small) -->
-    <div class="flex items-center gap-3">
-      <button (click)="logout()"
-              class="oh-logout inline-flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors"
-              aria-label="Logout">
-        <!-- text visible on md+ -->
-        <span class="hidden md:inline text-[var(--oh-navy)]">Logout</span>
+    <!-- Center: Workspace dropdown -->
+    <div class="flex-1 flex justify-center">
+      <select
+        id="workspaceSelect"
+        class="workspace-select"
+        [ngModel]="selectedWorkspaceId"
+        (ngModelChange)="onWorkspaceChangeById($event)"
+      >
+        <option *ngFor="let ws of workspaces"
+                [value]="ws.workspaceId?._id ?? ws.workspaceId ?? ws._id ?? ws.id">
+          {{ ws.workspaceId?.name ?? ws.name ?? (ws.workspaceId ?? ws._id ?? ws.id) }}
+          ({{ ws.role }})
+        </option>
+      </select>
+    </div>
 
-        <!-- icon visible on small -->
-        <svg class="md:hidden h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- Right: Logout -->
+    <div class="flex items-center">
+      <button (click)="logout()"
+              class="logout-btn"
+              aria-label="Logout">
+        <span class="hidden md:inline">Logout</span>
+        <!-- icon for mobile -->
+        <svg class="md:hidden h-5 w-5" viewBox="0 0 24 24" fill="none">
           <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M7 8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
     </div>
-    <div class="flex items-center space-x-4">
-    <label for="workspaceSelect" class="text-sm font-medium">Workspace:</label>
-
-    <select
-      id="workspaceSelect"
-      class="border rounded px-2 py-1"
-      [ngModel]="selectedWorkspaceId"
-      (ngModelChange)="onWorkspaceChangeById($event)"
-    >
-      <option *ngFor="let ws of workspaces"
-              [value]="ws.workspaceId?._id ?? ws.workspaceId ?? ws._id ?? ws.id">
-        {{ ws.workspaceId?.name ?? ws.name ?? (ws.workspaceId ?? ws._id ?? ws.id) }}
-        ({{ ws.role }})
-      </option>
-    </select>
-  </div>
-
 
   </div>
 </header>

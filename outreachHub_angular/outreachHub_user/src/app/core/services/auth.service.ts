@@ -12,7 +12,19 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router, private workspaceService: WorkspaceService) {}
+  constructor(private http: HttpClient, private router: Router, private workspaceService: WorkspaceService) {
+    const raw = localStorage.getItem('user');
+  if (raw) {
+    try {
+      const user = JSON.parse(raw);
+      this.currentUserSubject.next(user);
+    } catch {
+      localStorage.removeItem('user');
+    }
+  }
+  }
+
+  
 
   // 🔹 Login
   login(email: string, password: string): Observable<any> {

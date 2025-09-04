@@ -12,7 +12,10 @@ export class AppComponent {
 
   ngOnInit() {
     // This will auto-logout if token is expired
-    this.authService.autoLogoutOnExpiry();
+    // this.authService.autoLogoutOnExpiry();
+     if (this.authService.isAuthenticated()) {
+    this.authService.fetchUserData();
+  }
   }
 }
 
