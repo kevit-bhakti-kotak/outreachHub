@@ -1,1 +1,35 @@
-<p>header works!</p>
+<header class="oh-header fixed top-0 left-0 right-0 z-40 transition-all duration-300"
+        [class.scrolled]="isScrolled">
+
+  <!-- inner container shifts right to align with sidebar -->
+  <div
+    [ngClass]="{ 'ml-64': isSidebarOpen, 'ml-20': !isSidebarOpen }"
+    class="oh-header__inner transition-all duration-300 flex justify-between items-center px-4 sm:px-6 lg:px-8">
+
+    <!-- Left: Welcome + date/time -->
+    <div class="flex flex-col leading-tight min-w-0">
+      <div class="oh-header__greeting text-sm sm:text-base font-semibold text-[var(--oh-navy)] truncate">
+        Welcome, {{ userName }}
+      </div>
+      <div class="oh-header__datetime text-xs sm:text-sm text-[var(--oh-text-2)] truncate">
+        {{ currentDate | date:'fullDate' }} • {{ currentTime }}
+      </div>
+    </div>
+
+    <!-- Right: Logout (text on md+, icon on small) -->
+    <div class="flex items-center gap-3">
+      <button (click)="logout()"
+              class="oh-logout inline-flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors"
+              aria-label="Logout">
+        <!-- text visible on md+ -->
+        <span class="hidden md:inline text-[var(--oh-navy)]">Logout</span>
+
+        <!-- icon visible on small -->
+        <svg class="md:hidden h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>

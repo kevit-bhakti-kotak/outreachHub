@@ -1,0 +1,50 @@
+/* Use your palette variables (ensure they exist in global styles) */
+:root {
+  --oh-primary: #EB8A90;
+  --oh-primary-dark: #820933;
+  --oh-navy: #031927;
+  --oh-text-2: #555770;
+}
+
+/* header root */
+.oh-header {
+  pointer-events: auto;
+  background: transparent;
+  transition: background .25s ease, box-shadow .25s ease;
+  height: 64px; /* 4rem - adjust if your layout uses a different header height */
+  display: block;
+
+  /* inner container ensures content shifts with sidebar */
+  &__inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* default (top) - transparent */
+  &.scrolled {
+    /* translucent background so backdrop-filter blurs the content behind */
+    background: rgba(255, 255, 255, 0.15); // more transparent
+    -webkit-backdrop-filter: blur(16px) saturate(120%); // stronger blur
+    backdrop-filter: blur(16px) saturate(120%);
+    box-shadow: 0 6px 18px rgba(8, 15, 24, 0.08);
+  }
+}
+
+/* logout button visuals */
+.oh-logout {
+  background: var(--oh-primary);
+  color: var(--oh-navy);
+  border: none;
+  box-shadow: 0 2px 6px rgba(8, 15, 24, 0.12);
+}
+.oh-logout:hover {
+  background: var(--oh-primary-dark);
+  color: var(--oh-peach, #FCDFD1);
+}
+
+/* small responsiveness */
+@media (max-width: 640px) {
+  .oh-header { height: 56px; }
+}

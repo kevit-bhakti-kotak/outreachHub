@@ -1,2 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+/* OutreachHub palette */
+:root{
+  --oh-primary:        #EB8A90;   /* coral (CTAs, hovers)            */
+  --oh-primary-dark:   #820933;   /* deep maroon (active, emphasis)  */
+  --oh-navy:           #031927;   /* sidebar bg, strong text         */
+  --oh-teal:           #007C91;   /* charts/links/accent (optional)  */
+  --oh-peach:          #FCDFD1;   /* soft background/accent text     */
+  --oh-surface:        #F9F9FB;   /* card backgrounds                */
+  --oh-text:           #1C1C1E;   /* primary text                    */
+  --oh-text-2:         #555770;   /* secondary text                  */
+  --oh-border:         #BDC5D1;   /* borders/dividers                */
+}
+
+/* Utility helpers (optional) */
+.text-peach { color: var(--oh-peach); }
+.bg-navy    { background: var(--oh-navy); }
+.bg-peach   { background: var(--oh-peach); }
+.bg-primary { background: var(--oh-primary); }
+.bg-primary-dark { background: var(--oh-primary-dark); }

@@ -1,11 +1,18 @@
-<app-header></app-header>
+<div class="flex">
+  <!-- Sidebar -->
+  <app-sidebar [(isOpen)]="isSidebarOpen"></app-sidebar>
 
-<div class="app-body">
-  <app-sidebar></app-sidebar>
-  <main class="main-content">
-    <p>inside main-layout component</p>
-    <router-outlet></router-outlet>
-  </main>
+
+  <!-- Main area -->
+  <div [ngClass]="{ 'ml-64': isSidebarOpen, 'ml-20': !isSidebarOpen }"
+       class="flex-1 transition-all duration-300">
+    
+    <!-- Navbar -->
+    <app-header [isSidebarOpen]="isSidebarOpen"></app-header>
+
+    <!-- Scrollable dashboard -->
+    <main class="pt-20 px-4 sm:px-6 lg:px-8 bg-[#BDCBD4] h-screen overflow-y-auto">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 </div>
-
-<app-footer></app-footer>

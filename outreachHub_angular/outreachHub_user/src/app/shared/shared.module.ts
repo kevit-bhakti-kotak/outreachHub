@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
+
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -18,14 +19,16 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
   ],
   imports: [
     CommonModule,
-    RouterModule,FormsModule // for routerLink usage inside header/sidebar if needed
+    FormsModule,
+    RouterModule          // ✅ plain RouterModule (no forChild)
   ],
   exports: [
     AuthLayoutComponent,
     MainLayoutComponent,
     HeaderComponent,
     FooterComponent,
-    SidebarComponent
+    SidebarComponent,
+    RouterModule          // ✅ export so routerLink & router-outlet work
   ]
 })
 export class SharedModule {}

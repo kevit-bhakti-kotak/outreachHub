@@ -1,0 +1,13 @@
+:host {
+  --oh-navy: #031927;
+  --oh-primary: #EB8A90;
+  --oh-primary-dark: #820933;
+  --oh-peach: #FCDFD1;
+}
+
+/* Active link */
+.oh-nav-active {
+  background-color: color-mix(in srgb, var(--oh-primary) 50%, transparent);
+  color: var(--oh-navy);
+  font-weight: 600;
+}

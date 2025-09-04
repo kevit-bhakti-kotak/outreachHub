@@ -3,20 +3,28 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
-import { SharedModule } from './shared/shared.module'; // << important
+import { SharedModule } from './shared/shared.module';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { LucideAngularModule } from 'lucide-angular';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './core/interceptors/token.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    CoreModule,    // HttpClient, interceptors, core singletons
-    SharedModule,  // provides AuthLayoutComponent & MainLayoutComponent
-    AppRoutingModule,
+    CoreModule,         // singletons, interceptors
+    SharedModule,       // layouts + components
+    AppRoutingModule,   // ✅ contains RouterModule.forRoot(routes)
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    LucideAngularModule
+    
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+  ],
 })
 export class AppModule {}

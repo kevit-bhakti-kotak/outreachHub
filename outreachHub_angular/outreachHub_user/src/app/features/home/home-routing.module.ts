@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
+import { HomeComponent } from './home.component';
 
 const routes: Routes = [
-  // note: when loaded under MainLayoutComponent, path '/home' maps here
-  { path: '', component: HomeComponent }
+  { path: '', component: HomeComponent }  // /home → Dashboard page
 ];
 
 @NgModule({
