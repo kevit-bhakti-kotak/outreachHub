@@ -8,7 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TokenInterceptor } from './core/interceptors/token.interceptor';
+import { AuthInterceptor } from './core/auth.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,7 +24,7 @@ import { TokenInterceptor } from './core/interceptors/token.interceptor';
   ],
   bootstrap: [AppComponent],
    providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
 })
 export class AppModule {}
