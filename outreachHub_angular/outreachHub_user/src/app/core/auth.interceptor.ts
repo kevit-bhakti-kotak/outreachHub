@@ -6,10 +6,11 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
+import { WorkspaceService } from './services/workspace.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService, private workspaceService: WorkspaceService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // 🔹 Robust way to detect auth endpoints you want to skip
@@ -27,6 +28,12 @@ export class AuthInterceptor implements HttpInterceptor {
       this.auth.logout();
       return throwError(() => new Error('Token expired. Logged out.'));
     }
+    const workspaceId = this.workspaceService.getWorkspaceId();
+
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (workspaceId) headers['X-Workspace-Id'] = workspaceId;
+
 
     // 🔹 Attach Authorization header if token exists
     const authReq = token

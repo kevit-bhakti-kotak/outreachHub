@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { WorkspaceService } from './workspace.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,23 +12,27 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private workspaceService: WorkspaceService) {}
 
   // 🔹 Login
   login(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, password }).pipe(
-      tap((res) => {
-        if (res.token) {
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('email', email);
+  return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, password }).pipe(
+    tap((res) => {
+      if (res.token) {
+        // clear old session
+        this.logout(); // 👈 logout without redirect control
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('email', email);
 
-          this.autoLogoutOnExpiry()
-          // fetch user details immediately
-          this.fetchUserData();
-        }
-      })
-    );
-  }
+        this.autoLogoutOnExpiry();
+
+        // fetch user fresh
+        this.fetchUserData();
+      }
+    })
+  );
+}
+
 
   // 🔹 Decode JWT
   decodeToken(token: string): any {
@@ -40,37 +45,40 @@ export class AuthService {
 
   // 🔹 Fetch user data (roles, workspaces)
   fetchUserData() {
-    const token = this.getToken();
-    if (!token) return;
-    
-
-
-
-    const payload = this.decodeToken(token);
-    const userId = payload?.sub // 👈 depends on your backend
-    if (!userId) {
-      console.error('❌ No userId found in token payload');
-      return;
-    }
-    if (!payload) {
-    console.error('Invalid token');
-   this.logout();
+  const token = this.getToken();
+  if (!token) return;
+  const payload = this.decodeToken(token);
+  const userId = payload?.sub;
+  if (!userId) {
+    console.error('❌ No userId found in token payload');
     return;
   }
 
-    const headers = { Authorization: `Bearer ${token}` };
+  const headers = { Authorization: `Bearer ${token}` };
 
-    this.http.get<any>(`${this.apiUrl}/users/${userId}`, { headers }).subscribe({
-      next: (user) => {
-        localStorage.setItem('user', JSON.stringify(user));
-        this.currentUserSubject.next(user);
-        console.log('✅ User fetched:', user);
-      },
-      error: (err) => {
-        console.error('❌ Failed to fetch user:', err);
+  this.http.get<any>(`${this.apiUrl}/users/${userId}`, { headers }).subscribe({
+    next: (user) => {
+      localStorage.setItem('user', JSON.stringify(user));
+      this.currentUserSubject.next(user);
+
+      // restore last selected workspace if valid
+      const lastWs = this.workspaceService.getWorkspace();
+      if (lastWs && user.workspaces.some((w: any) =>
+        String(w.workspaceId?._id ?? w.workspaceId ?? w._id ?? w.id) === lastWs.workspaceId
+      )) {
+        this.workspaceService.setWorkspace(lastWs);
+      } else if (user.workspaces?.length > 0) {
+        this.workspaceService.setWorkspace(user.workspaces[0]); // fallback
       }
-    });
-  }
+
+      console.log('✅ User fetched:', user);
+    },
+    error: (err) => {
+      console.error('❌ Failed to fetch user:', err);
+    }
+  });
+}
+
  
   
   // 🔹 Get current user
@@ -91,13 +99,18 @@ export class AuthService {
   }
 
   // 🔹 Logout
-  logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('email');
-    localStorage.removeItem('user');
-    this.currentUserSubject.next(null);
+  logout(redirect: boolean = true) {
+  localStorage.removeItem('token');
+  localStorage.removeItem('email');
+  localStorage.removeItem('user');
+  this.currentUserSubject.next(null);
+  this.workspaceService.clearWorkspace();
+
+  if (redirect) {
     this.router.navigate(['/auth/login']);
   }
+}
+
 
   // 🔹 Helpers
   getToken(): string | null {

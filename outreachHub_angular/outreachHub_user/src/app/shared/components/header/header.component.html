@@ -31,5 +31,23 @@
         </svg>
       </button>
     </div>
+    <div class="flex items-center space-x-4">
+    <label for="workspaceSelect" class="text-sm font-medium">Workspace:</label>
+
+    <select
+      id="workspaceSelect"
+      class="border rounded px-2 py-1"
+      [ngModel]="selectedWorkspaceId"
+      (ngModelChange)="onWorkspaceChangeById($event)"
+    >
+      <option *ngFor="let ws of workspaces"
+              [value]="ws.workspaceId?._id ?? ws.workspaceId ?? ws._id ?? ws.id">
+        {{ ws.workspaceId?.name ?? ws.name ?? (ws.workspaceId ?? ws._id ?? ws.id) }}
+        ({{ ws.role }})
+      </option>
+    </select>
+  </div>
+
+
   </div>
 </header>
