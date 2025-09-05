@@ -21,6 +21,7 @@ export class User extends Document {
   @Prop({
     type: [
       {
+        _id: false,  // 🚀 prevents auto-generating _id
         workspaceId: { type: Types.ObjectId, ref: 'Workspace' },
         role: { type: String, enum: ['Editor', 'Viewer'], default: 'Viewer' },
       },

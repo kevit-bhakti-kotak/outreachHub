@@ -27,7 +27,7 @@ const routes: Routes = [
     canActivate: [AuthGuard], 
     children: [
       { path: 'home', loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule) },
-      // later add: { path: 'contacts', loadChildren: () => import('./features/contacts/contacts.module').then(m => m.ContactsModule) },
+       { path: 'contacts', loadChildren: () => import('./features/contacts/contacts.module').then(m => m.ContactsModule) },
       // { path: 'campaigns', loadChildren: () => import('./features/campaigns/campaigns.module').then(m => m.CampaignsModule) }
     ],
   },

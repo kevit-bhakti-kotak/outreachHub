@@ -6,13 +6,18 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })); //jwt-whitelist
+   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true , transform: true})); //jwt-whitelist
   const logger = new Logger('Bootstrap');
   logger.log('Application starting...');
 
-  app.enableCors({
-    origin: 'http://localhost:4200', // Angular dev server
+   app.enableCors({
+    origin: 'http://localhost:4200', // or your frontend domain
     credentials: true,
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Workspace-Id', // ✅ important
+    ],
   });
 
 

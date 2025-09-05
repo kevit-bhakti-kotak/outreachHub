@@ -30,7 +30,7 @@ async createUser(createUserDto: CreateUserDto): Promise<User> {
       phoneNumber,
       passwordHash,
       isAdmin: isAdmin || false,
-      workspaces: [], // start with no workspaces
+      workspaces: createUserDto.workspaces
     });
 
     return (await newUser.save());
@@ -41,11 +41,20 @@ getUsers(){
   }
 
 getUsersById(id: string){
-    return this.userModel.findById(id);
+    return this.userModel.findById(id).populate('workspaces.workspaceId', 'name');
   }
-updateUser(id: string , updateUserDto: UpdateUserDto){
-        return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true})
-     }
+async updateUser(id: string, updateUserDto: UpdateUserDto) {
+  if (updateUserDto.workspaces) {
+    return this.userModel.findByIdAndUpdate(
+      id,
+      { $addToSet: { workspaces: { $each: updateUserDto.workspaces } } },
+      { new: true }
+    );
+  }
+
+  // fallback for normal updates (name, email, etc.)
+  return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
+}
 
 deleteUser(id: string){
         return this.userModel.findByIdAndDelete(id);

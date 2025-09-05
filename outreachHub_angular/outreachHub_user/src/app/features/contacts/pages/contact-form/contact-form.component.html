@@ -1,0 +1,75 @@
+<div class="p-6 bg-[var(--oh-surface)] rounded-xl shadow-lg w-[400px]">
+  <!-- Title -->
+  <h2 class="text-xl font-semibold text-[var(--oh-navy)] mb-4">
+    {{ contact ? 'Edit Contact' : 'Add Contact' }}
+  </h2>
+
+  <!-- Form -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Name -->
+    <div>
+      <label class="block text-sm font-medium text-[var(--oh-text-2)]">Name</label>
+      <input type="text" formControlName="name"
+             class="w-full border border-[var(--oh-border)] rounded-lg px-3 py-2
+                    focus:outline-none focus:ring-2 focus:ring-[var(--oh-primary)]
+                    text-[var(--oh-text)]"/>
+    </div>
+
+    <!-- Phone -->
+    <div>
+      <label class="block text-sm font-medium text-[var(--oh-text-2)]">Phone</label>
+      <input type="text" formControlName="phoneNumber"
+             class="w-full border border-[var(--oh-border)] rounded-lg px-3 py-2
+                    focus:outline-none focus:ring-2 focus:ring-[var(--oh-primary)]
+                    text-[var(--oh-text)]"/>
+    </div>
+
+    <!-- Tags -->
+    <div>
+      <label class="block text-sm font-medium text-[var(--oh-text-2)]">Tags</label>
+      <div class="flex flex-wrap gap-2 mb-2">
+        <span *ngFor="let tag of tags.controls; let i = index"
+              class="inline-flex items-center bg-[var(--oh-peach)] text-[var(--oh-primary-dark)]
+                     text-xs font-medium px-3 py-1 rounded-full shadow-sm">
+          {{ tag.value }}
+          <button type="button"
+                  class="ml-2 text-[var(--oh-primary-dark)] hover:text-[var(--oh-primary)]"
+                  (click)="removeTag(i)">✕</button>
+        </span>
+      </div>
+      <div class="flex gap-2">
+        <input #tagInput type="text" placeholder="Add tag"
+               class="flex-1 border border-[var(--oh-border)] rounded-lg px-3 py-2
+                      focus:outline-none focus:ring-2 focus:ring-[var(--oh-primary)]
+                      text-[var(--oh-text)]"
+               (keydown)="onTagKeydown($event, tagInput)" />
+        <button type="button"
+                class="bg-[var(--oh-navy)] text-white px-3 py-2 rounded-lg
+                       hover:bg-[var(--oh-teal)] transition"
+                (click)="addTag(tagInput)">
+          Add
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer buttons -->
+    <div class="flex justify-end gap-3 mt-6">
+      <button type="button"
+              (click)="onCancel()"
+              class="px-4 py-2 rounded-lg border border-[var(--oh-border)]
+                     bg-[var(--oh-surface)] text-[var(--oh-text-2)]
+                     hover:bg-[var(--oh-peach)] hover:text-[var(--oh-primary-dark)]
+                     transition">
+        Cancel
+      </button>
+
+      <button type="submit"
+              [disabled]="form.invalid"
+              class="px-4 py-2 rounded-lg font-medium text-white shadow
+                     bg-[var(--oh-primary)] hover:bg-[var(--oh-primary-dark)]
+                     disabled:opacity-50 transition">
+        Save
+      </button>
+    </div>
+  </form>
+</div>
