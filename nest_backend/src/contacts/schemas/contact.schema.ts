@@ -8,11 +8,11 @@ export class Contact {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true, unique: true })
-  email: string;
+  @Prop({ type: [String], default: [] })
+  tags: string[];
 
   @Prop()
-  phone?: string;
+  phoneNumber?: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Workspace', required: true })
   workspaceId: Types.ObjectId;
@@ -22,3 +22,7 @@ export class Contact {
 }
 
 export const ContactSchema = SchemaFactory.createForClass(Contact);
+
+// // Indexes
+// ContactSchema.index({ workspaceId: 1, phoneNumber: 1 });
+//ContactSchema.index({ workspaceId: 1, tags: 1 });

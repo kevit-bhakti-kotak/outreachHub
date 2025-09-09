@@ -5,7 +5,7 @@ import {
   Body,
   Param,
   Delete,
-  Put,
+  Query,
   Req,
   UseGuards,
   HttpException,
@@ -42,21 +42,22 @@ export class ContactsController {
             return findUser;
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateContactDto: UpdateContactDto) {
-     const isValid = mongoose.Types.ObjectId.isValid(id);
-            if(!isValid) throw new HttpException('invalid id',400);
-            const updatedUser = await this.contactsService.update(id, updateContactDto);
-            if(!updatedUser)throw new HttpException('User Not Found', 404);
-            return updatedUser;
-  }
+ @Get('byWorkspace/:workspaceId')
+async findByWorkspace(
+  @Param('workspaceId') workspaceId: string,
+  @Query('page') page = 1,
+  @Query('limit') limit = 10,
+) {
+  return this.contactsService.findByWorkspace(workspaceId, Number(page), Number(limit));
+}
+@Patch(':id')
+async update(@Param('id') id: string, @Body() updateContactDto: UpdateContactDto, @Req() req: any) {
+  return this.contactsService.update(id, updateContactDto, req.user.userId);
+}
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const isValid = mongoose.Types.ObjectId.isValid(id);
-            if(!isValid) throw new HttpException('user not found',404);
-            const deletedUser = await this.contactsService.remove(id);
-            if(!deletedUser) throw new HttpException('user not found', 404);
-            return;
-  }
+@Delete(':id')
+async remove(@Param('id') id: string, @Req() req: any) {
+  return this.contactsService.remove(id, req.user.userId);
+}
+
 }

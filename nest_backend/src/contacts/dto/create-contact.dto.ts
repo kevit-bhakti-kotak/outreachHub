@@ -1,17 +1,17 @@
-import { IsEmail, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEmail, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateContactDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
+  @IsArray()
+  @IsOptional()
+  tags?: string[];
 
   @IsString()
   @IsOptional()
-  phone?: string;
+  phoneNumber?: string;
 
   @IsMongoId()
   @IsNotEmpty()
