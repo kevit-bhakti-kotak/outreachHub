@@ -164,9 +164,10 @@ autoLogoutOnExpiry() {
   } else {
     setTimeout(() => this.logout(), timeout);
   }
-}
-
-
-
   }
+  getUserId(): string | null {
+  const user = this.getCurrentUser();
+  return user?._id ?? null;
+  }
+}
 

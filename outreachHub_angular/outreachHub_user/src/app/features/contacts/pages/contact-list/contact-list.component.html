@@ -54,20 +54,31 @@
 
           <!-- Actions -->
           <td class="px-4 py-2 text-right space-x-3">
-            <button 
-              (click)="onEdit(c)"
-              class="bg-[var(--oh-navy)] text-white px-3 py-1 rounded-lg font-medium
-                     shadow hover:shadow-md hover:bg-[var(--oh-teal)]
-                     transition duration-200 ease-in-out">
-              Edit
-            </button>
-            <button 
-              (click)="onDelete(c)"
-              class="bg-[var(--oh-primary-dark)] text-white px-3 py-1 rounded-lg font-medium
-                     shadow hover:shadow-md hover:bg-[var(--oh-primary)]
-                     transition duration-200 ease-in-out">
-              Delete
-            </button>
+            <!-- Edit -->
+<!-- Edit -->
+  <button 
+    (click)="onEdit(c)"
+    [disabled]="!isOwner(c)"
+    class="px-3 py-1 rounded-lg font-medium transition duration-200 ease-in-out
+           text-white shadow 
+           bg-[#031927] hover:bg-[#007C91]
+           disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none">
+    Edit
+  </button>
+
+<!-- Delete -->
+  <button 
+    (click)="onDelete(c)"
+    [disabled]="!isOwner(c)"
+    class="px-3 py-1 rounded-lg font-medium transition duration-200 ease-in-out
+           text-white shadow 
+           bg-[#820933] hover:bg-[#EB8A90]
+           disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none">
+    Delete
+  </button>
+
+
+
           </td>
         </tr>
       </tbody>
