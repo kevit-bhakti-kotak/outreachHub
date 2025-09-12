@@ -28,7 +28,8 @@ const routes: Routes = [
     children: [
       { path: 'home', loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule) },
        { path: 'contacts', loadChildren: () => import('./features/contacts/contacts.module').then(m => m.ContactsModule) },
-      // { path: 'campaigns', loadChildren: () => import('./features/campaigns/campaigns.module').then(m => m.CampaignsModule) }
+      { path: 'campaigns', loadChildren: () => import('./features/campaign/campaign.module').then(m => m.CampaignsModule) },
+      {path: 'message-templates', loadChildren: ()=> import('./features/message-templates/message-templates.module').then(m=> m.MessageTemplatesModule)},
     ],
   },
 

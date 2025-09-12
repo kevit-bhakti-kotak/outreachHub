@@ -149,6 +149,21 @@ export class ContactService {
       })
     );
   }
+  // get all tags in workspace
+getTags(workspaceId: string): Observable<string[]> {
+  return this.http.get<string[]>(`${this.baseUrl}/tags/${workspaceId}`);
+}
+
+// count contacts by tags
+countByTags(workspaceId: string, tags: string[]): Observable<number> {
+  return this.http.post<number>(`${this.baseUrl}/count-by-tags`, { workspaceId, tags });
+}
+
+// fetch contacts by tags
+getContactsByTags(workspaceId: string, tags: string[]): Observable<IContact[]> {
+  return this.http.post<IContact[]>(`${this.baseUrl}/by-tags`, { workspaceId, tags });
+}
+
 
   // ---------- update ----------
   updateContact(id: string, contact: IContact): Observable<IContact> {
@@ -193,5 +208,10 @@ export class ContactService {
     const meta = this.metaSubject.value;
     this.loadContacts({ page: meta.page, limit: meta.limit });
   }
+
+  // fetch unique tags for a workspace
+getTagsByWorkspace(workspaceId: string): Observable<string[]> {
+  return this.http.get<string[]>(`${this.baseUrl}/tags`, { params: { workspaceId } });
+}
 
 }

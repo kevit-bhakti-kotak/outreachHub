@@ -1,0 +1,63 @@
+<div class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold">Message Templates</h2>
+    <button
+      class="px-4 py-2 bg-primary text-white rounded-lg"
+      (click)="createTemplate()"
+    >
+      + Create Template
+    </button>
+  </div>
+
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    *ngIf="templates.length > 0; else emptyState"
+  >
+    <div
+      *ngFor="let template of templates"
+      class="bg-white shadow rounded-xl p-5 flex flex-col justify-between"
+    >
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">
+          {{ template.name }}
+        </h3>
+        <p class="text-sm text-gray-500 mb-2">Type: {{ template.type }}</p>
+
+        <p class="text-gray-700">{{ template.message?.text }}</p>
+        <img
+          *ngIf="template.type === 'Text-Image' && template.message?.imageUrl"
+          [src]="template.message.imageUrl"
+          alt="Template image"
+          class="mt-3 rounded-md max-h-40 object-cover"
+        />
+      </div>
+
+      <div class="flex justify-end space-x-3 mt-4">
+        <button
+          class="text-sm text-blue-600 hover:underline"
+          (click)="viewTemplate(template._id)"
+        >
+          View
+        </button>
+        <button
+          class="text-sm text-yellow-600 hover:underline"
+          (click)="editTemplate(template._id)"
+        >
+          Edit
+        </button>
+        <button
+          class="text-sm text-red-600 hover:underline"
+          (click)="deleteTemplate(template._id)"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="text-center text-gray-500 py-10">
+      No templates found for this workspace.
+    </div>
+  </ng-template>
+</div>

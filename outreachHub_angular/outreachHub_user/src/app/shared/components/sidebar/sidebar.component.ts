@@ -14,7 +14,7 @@ export class SidebarComponent {
   menuItems = [
     { name: 'Home', link: '/home' },
     { name: 'Contacts', link: '/contacts' },
-    { name: 'Messages', link: '/messages' },
+    { name: 'Message-templates', link: '/message-templates' },
     { name: 'Campaigns', link: '/campaigns' },
   ];
 
