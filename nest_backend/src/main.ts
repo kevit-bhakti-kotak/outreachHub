@@ -6,7 +6,13 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true , transform: true})); //jwt-whitelist
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,       // strips extra properties automatically
+    forbidNonWhitelisted: false, // don’t throw 400 for extra props
+    transform: true,       // optional, auto-converts types
+  }),
+);
   const logger = new Logger('Bootstrap');
   logger.log('Application starting...');
 

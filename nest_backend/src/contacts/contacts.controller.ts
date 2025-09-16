@@ -27,6 +27,21 @@ export class ContactsController {
   async create(@Body() createContactsDto: CreateContactDto, @Req() req: any):Promise<Contact> {
     return this.contactsService.create(createContactsDto, req.user.userId);
   }
+  @Get('tags/:workspaceId')
+async getTags(@Param('workspaceId') workspaceId: string) {
+  return this.contactsService.getTagsByWorkspace(workspaceId);
+}
+
+@Post('count-by-tags')
+async countByTags(@Body() body: { workspaceId: string; tags: string[] }) {
+  return this.contactsService.countByTags(body.workspaceId, body.tags || []);
+}
+
+@Post('by-tags')
+async findByTags(@Body() body: { workspaceId: string; tags: string[] }) {
+  return this.contactsService.findByTags(body.workspaceId, body.tags || []);
+}
+
 
   @Get()
   async findAll() {

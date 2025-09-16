@@ -11,7 +11,7 @@ export class MessageTemplatesService {
   constructor(
     @InjectModel(MessageTemplate.name) private templateModel: Model<MessageTemplateDocument>,
   ) {}
-
+  
   async create(dto: CreateMessageTemplateDto, userId: string): Promise<MessageTemplate> {
     const created = new this.templateModel({ ...dto, createdBy: userId });
     return created.save();
@@ -19,7 +19,6 @@ export class MessageTemplatesService {
 
   async findAll(): Promise<MessageTemplate[]> {
     return this.templateModel.find()
-      .populate('campaignId')
       .populate('createdBy')
       .exec();
   }
@@ -29,6 +28,10 @@ export class MessageTemplatesService {
       .populate('createdBy')
       .exec();
   }
+ async findByWorkspace(workspaceId: string) {
+  return this.templateModel.find({ workspaceId }).exec();
+}
+
 
   async findOne(id: string): Promise<MessageTemplate | null> {
     return this.templateModel.findById(id).exec();

@@ -23,6 +23,27 @@ export class ContactsService {
   async findAll(): Promise<Contact[]> {
     return this.contactModel.find().populate('workspaceId createdBy').exec();
   }
+ async getTagsByWorkspace(workspaceId: string): Promise<string[]> {
+  const contacts = await this.contactModel.find({ workspaceId }, { tags: 1 }).exec();
+  const tags = new Set<string>();
+  contacts.forEach(c => c.tags?.forEach(t => tags.add(t)));
+  return Array.from(tags);
+}
+
+
+async countByTags(workspaceId: string, tags: string[]): Promise<number> {
+  return this.contactModel.countDocuments({
+    workspaceId,
+    tags: { $in: tags }
+  });
+}
+
+async findByTags(workspaceId: string, tags: string[]): Promise<Contact[]> {
+  return this.contactModel.find({
+    workspaceId,
+    tags: { $in: tags }
+  }).exec();
+}
 
   async findOne(id: string): Promise<Contact> {
     const contact = await this.contactModel.findById(id).exec();

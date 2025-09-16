@@ -1,16 +1,39 @@
-// src/message-templates/dto/create-message-template.dto.ts
-import { IsNotEmpty, IsString, IsMongoId } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEnum,
+  ValidateNested,
+  IsOptional,
+  IsMongoId,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+class MessageContentDto {
+  @IsString()
+  @IsNotEmpty()
+  text: string;
+
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
+}
 
 export class CreateMessageTemplateDto {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  name: string;
 
-  @IsString()
-  @IsNotEmpty()
-  content: string;
+  @IsEnum(['Text', 'Text-Image'], { message: 'type must be either Text or Text-Image' })
+  type: 'Text' | 'Text-Image';
 
-  @IsMongoId()
-  @IsNotEmpty()
-  campaignId: string;
+  @ValidateNested()
+  @Type(() => MessageContentDto)
+  message: MessageContentDto;
+
+  @IsMongoId({ message: 'Invalid workspaceId format' })
+  workspaceId: string;
+
+  @IsOptional()
+  @IsMongoId({ message: 'Invalid createdBy format' })
+  createdBy?: string;
 }

@@ -1,20 +1,29 @@
 // src/campaigns/dto/create-campaign.dto.ts
-import { IsNotEmpty, IsString, IsOptional, IsMongoId, IsIn } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsArray, IsMongoId, IsDateString } from 'class-validator';
 
 export class CreateCampaignDto {
   @IsString()
-  @IsNotEmpty()
-  name: string;
+   name: string;
 
+  @IsOptional()
   @IsString()
-  @IsOptional()
-  description?: string;
+   description?: string;
 
-  @IsMongoId()
-  @IsNotEmpty()
-  workspaceId: string;
-
-  @IsIn(['draft', 'active', 'completed'])
   @IsOptional()
-  status?: string;
+  @IsEnum(['Draft', 'Running', 'Completed'])
+   status?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+   selectedTags?: string[];
+
+  @IsOptional()
+   templateId?: string;
+
+  @IsOptional()
+  readonly workspaceId?: string;
+
+   @IsOptional()
+  readonly createdBy?: string;
 }

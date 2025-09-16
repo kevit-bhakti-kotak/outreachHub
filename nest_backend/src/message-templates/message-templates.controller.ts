@@ -1,5 +1,5 @@
 // src/message-templates/message-templates.controller.ts
-import { Controller, Get, Post, Body, Param, Delete, Patch, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, Req, UseGuards, BadRequestException, Query } from '@nestjs/common';
 import { MessageTemplatesService } from './message-templates.service';
 import { CreateMessageTemplateDto } from './dto/create-message-template.dto';
 import { UpdateMessageTemplateDto } from './dto/update-message-template.dto';
@@ -9,11 +9,17 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 export class MessageTemplatesController {
   constructor(private readonly templatesService: MessageTemplatesService) {}
-
+  
   @Post()
   async create(@Body() dto: CreateMessageTemplateDto, @Req() req) {
     return this.templatesService.create(dto, req.user.userId);
   }
+ @Get()
+async getAll(@Query('workspaceId') workspaceId: string) {
+  if (!workspaceId) throw new BadRequestException('workspaceId required');
+  return this.templatesService.findByWorkspace(workspaceId);
+}
+
 
   @Get()
   async findAll() {
