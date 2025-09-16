@@ -1,0 +1,43 @@
+<div class="flex h-screen w-full bg-white md:bg-white bg-gradient-to-br from-pink-200 to-purple-100 md:bg-none">
+  <!-- LEFT illustration -->
+  <div class="hidden md:flex flex-1 items-center justify-center bg-gray-100 overflow-hidden">
+    <img src="../../../../assets/images/login.png" alt="login page" class="w-full h-full object-cover"/>
+  </div>
+
+  <!-- RIGHT section -->
+  <div class="flex flex-1 items-center justify-center p-8 w-full h-full bg-transparent">
+    <form [formGroup]="loginForm"
+          (ngSubmit)="onLogin()"
+          class="w-full max-w-lg flex flex-col bg-white bg-opacity-95 p-10 rounded-xl shadow-lg">
+      <h2 class="mb-4 text-center text-3xl font-bold text-[var(--oh-navy)]">Admin Portal</h2>
+      <p class="mb-8 text-center text-gray-600 text-base">Login with your admin credentials</p>
+
+      <!-- Email -->
+      <input type="text"
+             placeholder="Email"
+             formControlName="email"
+             class="w-full p-4 mb-2 border border-[var(--oh-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--oh-primary)]"/>
+      <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid"
+           class="text-sm text-red-500 mb-4 -mt-1">
+        Email is required
+      </div>
+
+      <!-- Password -->
+      <input type="password"
+             placeholder="Password"
+             formControlName="password"
+             class="w-full p-4 mb-2 border border-[var(--oh-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--oh-primary)]"/>
+      <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
+           class="text-sm text-red-500 mb-4 -mt-1">
+        Password is required
+      </div>
+
+      <!-- Submit -->
+      <button type="submit"
+              [disabled]="loginForm.invalid"
+              class="w-full p-4 mt-2 rounded-md font-semibold text-white bg-[var(--oh-primary)] hover:bg-[var(--oh-primary-dark)] border border-[var(--oh-primary)] disabled:opacity-50 disabled:cursor-not-allowed text-lg">
+        Login
+      </button>
+    </form>
+  </div>
+</div>
