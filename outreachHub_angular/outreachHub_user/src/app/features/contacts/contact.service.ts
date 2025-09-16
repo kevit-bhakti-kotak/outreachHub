@@ -209,9 +209,10 @@ getContactsByTags(workspaceId: string, tags: string[]): Observable<IContact[]> {
     this.loadContacts({ page: meta.page, limit: meta.limit });
   }
 
-  // fetch unique tags for a workspace
-getTagsByWorkspace(workspaceId: string): Observable<string[]> {
-  return this.http.get<string[]>(`${this.baseUrl}/tags`, { params: { workspaceId } });
+// fetch unique tags for a workspace
+getTagsByWorkspace(workspaceId: string) {
+  return this.http.get<string[]>(`${this.baseUrl}/tags/${workspaceId}`);
 }
+
 
 }

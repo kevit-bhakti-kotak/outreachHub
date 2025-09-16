@@ -1,20 +1,22 @@
-<div class="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow space-y-4">
-  <h2 class="text-xl font-semibold text-[var(--oh-text)]">
-    {{ isEdit ? 'Edit Campaign' : 'Create Campaign' }}
+<div>
+  <h2 class="text-xl font-semibold text-[var(--oh-navy)] mb-4">
+      {{ mode === 'edit' ? 'Edit Campaign' : mode === 'view' ? 'View Campaign' : 'Create Campaign' }}
   </h2>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
     <!-- Name -->
     <div>
-      <label class="block text-sm font-medium">Campaign Name</label>
+      <label class="block text-sm font-medium">Name</label>
       <input formControlName="name"
-             class="mt-1 block w-full border border-[var(--oh-border)] rounded-md p-2"/>
+             [readonly]="mode==='view'"
+             class="w-full border border-[var(--oh-border)] rounded-lg px-3 py-2"/>
     </div>
 
     <!-- Template -->
     <div>
       <label class="block text-sm font-medium">Message Template</label>
       <select formControlName="templateId"
+                    [disabled]="mode==='view'"
               class="mt-1 block w-full border border-[var(--oh-border)] rounded-md p-2">
         <option value="" disabled>Select template</option>
         <option *ngFor="let t of templates" [value]="t._id">{{ t.name }}</option>
@@ -25,18 +27,30 @@
     </div>
 
     <!-- Tags -->
-    <div>
-      <label class="block text-sm font-medium">Tags</label>
-      <select formControlName="selectedTags"
-              multiple
-              (change)="onTagsSelect($event)"
-              class="mt-1 block w-full border border-[var(--oh-border)] rounded-md p-2">
-        <option *ngFor="let tag of availableTags" [value]="tag">{{ tag }}</option>
-      </select>
-      <div *ngIf="availableTags.length === 0" class="text-xs text-gray-500 mt-1">
-        No tags available in this workspace.
-      </div>
+<div class="relative">
+  <!-- Button -->
+  <button type="button"
+          class="w-full border border-[var(--oh-border)] rounded-md p-2 text-left"
+          (click)="tagsDropdownOpen = !tagsDropdownOpen">
+    {{ form.value.selectedTags.length ? form.value.selectedTags.join(', ') : 'Select tags' }}
+  </button>
+
+  <!-- Dropdown -->
+  <div *ngIf="tagsDropdownOpen"
+       class="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow z-10 max-h-60 overflow-auto">
+    <div *ngFor="let tag of availableTags" class="p-2 hover:bg-gray-100">
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input type="checkbox"
+       [checked]="form.value.selectedTags.includes(tag)"
+       (change)="toggleTag(tag, $event)" />
+
+        {{ tag }}
+      </label>
     </div>
+  </div>
+</div>
+
+
 
     <!-- Audience targeted -->
     <div>
@@ -53,16 +67,18 @@
     </div>
 
     <!-- Buttons -->
-    <div class="flex justify-end gap-3">
+    <!-- Footer -->
+    <div class="flex justify-end gap-3 mt-6">
       <button type="button"
-              (click)="cancel()"
+              (click)="onCancel()"
               class="px-4 py-2 rounded-lg border border-[var(--oh-border)] bg-[var(--oh-surface)]">
         Cancel
       </button>
-      <button type="submit"
+      <button *ngIf="mode!=='view'"
+              type="submit"
               [disabled]="form.invalid"
               class="px-4 py-2 rounded-lg text-white bg-[var(--oh-primary)] hover:bg-[var(--oh-primary-dark)]">
-        {{ isEdit ? 'Update' : 'Create' }}
+        {{ mode === 'edit' ? 'Update' : 'Create' }}
       </button>
     </div>
   </form>

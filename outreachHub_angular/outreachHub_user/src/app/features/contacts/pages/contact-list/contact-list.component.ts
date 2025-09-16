@@ -22,6 +22,7 @@ export class ContactListComponent implements OnInit, OnDestroy {
   limit = 5;
   total = 0;
 
+  
   // search
   searchText = '';
 
