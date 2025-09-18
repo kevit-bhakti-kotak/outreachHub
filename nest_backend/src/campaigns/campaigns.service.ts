@@ -1,11 +1,12 @@
 // src/campaigns/campaigns.service.ts
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Campaign } from './schemas/campaign.schema';
 import { CreateCampaignDto } from './dto/create-campain.dto';
 import { CampaignMessage } from 'src/campaign-mesage/schemas/campaign-message.schema';
 import { Contact } from 'src/contacts/schemas/contact.schema';
+import { MessageTemplate } from 'src/message-templates/schemas/mesage-template.schema';
 
 @Injectable()
 export class CampaignsService {
@@ -13,7 +14,9 @@ export class CampaignsService {
     @InjectModel(Campaign.name) private campaignModel: Model<Campaign>,
     @InjectModel(CampaignMessage.name) private campaignMessageModel: Model<CampaignMessage>,
     @InjectModel(Contact.name) private contactModel: Model<Contact>,
+    @InjectModel(MessageTemplate.name) private templateModel: Model<MessageTemplate>, 
   ) {}
+  
 
   async create(createCampaignDto: CreateCampaignDto, userId: string): Promise<Campaign> {
     const createdCampaign = new this.campaignModel({
@@ -23,15 +26,23 @@ export class CampaignsService {
     return createdCampaign.save();
   }
 
-  async findAll(workspaceId?: string): Promise<Campaign[]> {
-  const query = workspaceId ? { workspaceId } : {};
-  return this.campaignModel
-    .find(query)
-    .populate('templateId')
-    .populate('workspaceId')
-    .populate('createdBy')
-    .exec();
-}
+  async findAll(workspaceId?: string, page?: number, limit?: number): Promise<{ data: Campaign[]; total: number }> {
+    const query = workspaceId ? { workspaceId } : {};
+    const skip = page && limit ? (page - 1) * limit : 0;
+    const campaignsQuery = this.campaignModel.find(query)
+      .populate('templateId')
+      .populate('workspaceId')
+      .populate('createdBy')
+      .skip(skip)
+      .limit(limit || 0);
+
+    const [data, total] = await Promise.all([
+      campaignsQuery.exec(),
+      this.campaignModel.countDocuments(query).exec(),
+    ]);
+
+    return { data, total };
+  }
 
   async findOne(id: string): Promise<Campaign | null> {
     return this.campaignModel.findById(id).exec();
@@ -46,42 +57,73 @@ export class CampaignsService {
   }
 
   async launchCampaign(id: string, userId: string) {
-  const campaign = await this.campaignModel.findById(id);
-  if (!campaign) throw new NotFoundException('Campaign not found');
-  if (campaign.status !== 'Draft') throw new BadRequestException('Only draft campaigns can be launched');
+    const campaign = await this.campaignModel.findById(id);
+    if (!campaign) throw new NotFoundException('Campaign not found');
+    if (campaign.status !== 'Draft') {
+      throw new BadRequestException('Only draft campaigns can be launched');
+    }
 
-  // 1. Update status + launchedAt
-  campaign.status = 'Running';
-  campaign.launchedAt = new Date();
-  await campaign.save();
+    // 1. Update status + launchedAt
+    campaign.status = 'Running';
+    campaign.launchedAt = new Date();
+    await campaign.save();
 
-  // 2. Fetch contacts based on campaign.selectedTags
-  // (replace with real ContactService or query)
-  const contacts = await this.contactModel.find({ 
-    workspaceId: campaign.workspaceId,
-    tags: { $in: campaign.selectedTags }
+    // 2. Populate template if available
+    let template: MessageTemplate | null = null;
+    if (campaign.templateId) {
+      template = await this.templateModel.findById(campaign.templateId);
+    }
+
+    // 3. Fetch contacts based on tags
+    const contacts = await this.contactModel.find({
+      workspaceId: campaign.workspaceId,
+      tags: { $in: campaign.selectedTags },
+    });
+
+    // 4. Create campaign messages snapshot
+    const messages = contacts.map(c => ({
+      workspace: campaign.workspaceId,
+      campaign: campaign._id,
+      contactIds: [c._id],
+      createdBy: new Types.ObjectId(userId),
+      messageContent: template
+  ? template.message.text.replace('{{name}}', c.name) // use message.text
+  : `Hello ${c.name}, from ${campaign.name}`, //does not have text+img logic yet...
+
+      sentAt: new Date(),
+    }));
+
+    await this.campaignMessageModel.insertMany(messages);
+
+    // 5. Fake complete after 5s (simulate async send)
+    setTimeout(async () => {
+      await this.campaignModel.findByIdAndUpdate(campaign._id, {
+        status: 'Completed',
+      });
+    }, 5000);
+
+    return campaign;
+  }
+
+async copyCampaign(id: string, userId: string) {
+  const original = await this.campaignModel.findById(id);
+  if (!original) throw new NotFoundException('Campaign not found');
+
+  const copy = new this.campaignModel({
+    name: `${original.name} (Copy)`,
+    description: original.description,
+    selectedTags: original.selectedTags,
+    templateId: (original.templateId as any)?._id || original.templateId,
+    workspaceId: (original.workspaceId as any)?._id || original.workspaceId,
+
+    createdBy: new Types.ObjectId(userId),
+    status: 'Draft',
   });
 
-  // 3. Create campaign messages snapshot
-  const messages = contacts.map(c => ({
-    workspace: campaign.workspaceId,
-    campaign: campaign._id,
-    contactIds: [c._id],
-    createdBy: userId,
-    messageContent: `Hello ${c.name}, from ${campaign.name}`,
-    sentAt: new Date()
-  }));
-
-  await this.campaignModel.insertMany(messages);
-
-  // 4. Fake complete after 5s
-  setTimeout(async () => {
-    await this.campaignModel.findByIdAndUpdate(campaign._id, {
-      status: 'Completed'
-    });
-  }, 5000);
-
-  return campaign;
+  return copy.save();
 }
+
+
+
 
 }

@@ -33,4 +33,45 @@ export class WorkspacesController {
   async remove(@Param('id') id: string) {
     return this.workspacesService.remove(id);
   }
+
+@Delete(':id/users/:userId')
+removeUserFromWorkspace(
+  @Param('id') workspaceId: string,
+  @Param('userId') userId: string,
+  @Req() req
+) {
+  return this.workspacesService.removeUser(workspaceId, userId);
+}
+@Patch(':id/users/:userId')
+@UseGuards(JwtAuthGuard)
+async updateUserRole(
+  @Param('id') workspaceId: string,
+  @Param('userId') userId: string,
+  @Body('role') role: 'Editor' | 'Viewer',
+) {
+  return this.workspacesService.updateUserRole(workspaceId, userId, role);
+}
+
+  @Post(':id/users')
+@UseGuards(JwtAuthGuard)
+async addUsers(
+  @Param('id') workspaceId: string,
+  @Body() body: { users: { email: string; role: 'Editor' | 'Viewer' }[] },
+  @Req() req
+) {
+  const adminId = req.user.userId;
+  return this.workspacesService.addUsersToWorkspace(workspaceId, body.users, adminId);
+}
+
+@Patch(':id/users/:userId/remove')
+@UseGuards(JwtAuthGuard)
+async removeUser(
+  @Param('id') workspaceId: string,
+  @Param('userId') userId: string,
+) {
+  return this.workspacesService.removeUser(workspaceId, userId);
+}
+
+
+
 }

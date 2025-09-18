@@ -43,7 +43,7 @@ getUsers(){
 getUsersById(id: string){
     return this.userModel.findById(id).populate('workspaces.workspaceId', 'name');
   }
-async updateUser(id: string, updateUserDto: UpdateUserDto) {
+ updateUser(id: string, updateUserDto: UpdateUserDto) {
   if (updateUserDto.workspaces) {
     return this.userModel.findByIdAndUpdate(
       id,

@@ -34,13 +34,14 @@ export class UsersController {
 
     @Patch(':id')
     @UseGuards(JwtAuthGuard)
-async updateUser(@Param('id')id:string,@Body()updateUserDto:UpdateUserDto){
+    async updateUser(@Param('id')id:string,@Body()updateUserDto:UpdateUserDto){
     const isValid = mongoose.Types.ObjectId.isValid(id);
         if(!isValid) throw new HttpException('invalid id',400);
         const updatedUser = await this.usersService.updateUser(id, updateUserDto);
         if(!updatedUser)throw new HttpException('User Not Found', 404);
         return updatedUser;
 }
+    
 
 @Delete(':id')
 @UseGuards(JwtAuthGuard)
@@ -51,4 +52,5 @@ async deleteUser(@Param('id') id:string){
         if(!deletedUser) throw new HttpException('user not found', 404);
         return;
 }
+
 }

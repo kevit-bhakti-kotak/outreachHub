@@ -23,4 +23,4 @@ export class CampaignMessage extends Document {
 }
 
 export const CampaignMessageSchema = SchemaFactory.createForClass(CampaignMessage);
-CampaignMessageSchema.index({ campaignId: 1, contactId: 1 });
+CampaignMessageSchema.index({ campaign: 1, contactIds: 1 });
