@@ -1,11 +1,19 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IContact } from '../../model/contact.model';
 
 @Component({
   selector: 'app-contact-form',
   templateUrl: './contact-form.component.html',
-  styleUrls: ['./contact-form.component.scss']
+  styleUrls: ['./contact-form.component.scss'],
 })
 export class ContactFormComponent implements OnInit, OnChanges {
   @Input() contact: IContact | null = null;
@@ -17,74 +25,83 @@ export class ContactFormComponent implements OnInit, OnChanges {
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    this.initForm();
+    this.buildForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['contact'] && !changes['contact'].firstChange) {
-      this.initForm();
+      this.buildForm();
     }
   }
 
-  private initForm() {
-  this.form = this.fb.group({
-    name: [this.contact?.name || '', Validators.required],
-    phoneNumber: [this.contact?.phoneNumber || ''], // not required
-    tags: this.fb.array(this.contact?.tags?.map(tag => this.fb.control(tag)) || [])
-  });
-}
+  /** Build or rebuild form with provided contact data */
+  private buildForm(): void {
+    this.form = this.fb.group({
+      name: [this.contact?.name ?? '', Validators.required],
+      phoneNumber: [this.contact?.phoneNumber ?? ''],
+      tags: this.fb.array(
+        (this.contact?.tags ?? []).map(tag => this.fb.control(tag))
+      ),
+    });
+  }
 
-
+  /** Tags form array accessor */
   get tags(): FormArray {
     return this.form.get('tags') as FormArray;
   }
 
-  addTag(input: HTMLInputElement) {
-  const raw = (input.value || '').trim();
-  if (raw) {
-    // Split on comma and spaces
+  /** Add tag(s) from input */
+  addTag(input: HTMLInputElement): void {
+    const raw = (input.value || '').trim();
+    if (!raw) return;
+
     const parts = raw.split(/[\s,]+/).filter(Boolean);
-    for (const p of parts) {
-       if (!p.includes(' ')){
-      this.tags.push(this.fb.control(p));
-       }
+
+    for (const tag of parts) {
+      if (!tag.includes(' ') && !this.tags.value.includes(tag)) {
+        this.tags.push(this.fb.control(tag));
+      }
     }
+
     input.value = '';
   }
-}
-onTagKeydown(event: KeyboardEvent, input: HTMLInputElement) {
-  if (event.key === 'Enter' || event.key === ',') {
-    event.preventDefault();
-    this.addTag(input);
+
+  /** Handle Enter or comma key for tag input */
+  onTagKeydown(event: KeyboardEvent, input: HTMLInputElement): void {
+    if (event.key === 'Enter' || event.key === ',') {
+      event.preventDefault();
+      this.addTag(input);
+    }
   }
-}
 
-
-
-  removeTag(index: number) {
+  /** Remove tag by index */
+  removeTag(index: number): void {
     this.tags.removeAt(index);
   }
 
- // called by form (ngSubmit) and also bound to Save button click as a fallback
-  onSubmit() {
-    if (!this.form) return console.warn('Form not initialized');
+  /** Save form and emit contact payload */
+  onSubmit(): void {
+    if (!this.form) {
+      console.warn('Form not initialized');
+      return;
+    }
+
     if (this.form.invalid) {
-      // optional: mark touched to show validation
       this.form.markAllAsTouched();
       return;
     }
 
-    // build payload: ensure tags is string[]
     const payload: IContact = {
       ...this.form.value,
-      tags: this.tags.controls.map(c => c.value)
+      tags: this.tags.value as string[],
     };
 
-    console.log('[ContactForm] onSubmit payload:', payload);
+    console.log('[ContactForm] Submit payload:', payload);
     this.save.emit(payload);
   }
 
-  onCancel() {
+  /** Cancel form */
+  onCancel(): void {
     this.cancel.emit();
   }
 }

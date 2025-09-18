@@ -1,1 +1,25 @@
-<p>workspace-list works!</p>
+<div class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold text-[var(--oh-navy)]">Workspaces</h2>
+    <button (click)="openCreate()"
+      class="bg-[var(--oh-primary)] text-white px-4 py-2 rounded-lg font-medium shadow hover:bg-[var(--oh-primary-dark)]">
+      ＋ Create Workspace
+    </button>
+  </div>
+
+  <!-- Grid of Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let ws of workspaces"
+      (click)="openDetail(ws._id)"
+      class="cursor-pointer p-4 bg-white shadow rounded-xl border border-[var(--oh-border)] hover:shadow-lg transition">
+      
+      <h3 class="text-lg font-bold text-[var(--oh-navy)]">{{ ws.name }}</h3>
+      <p class="text-sm text-gray-500">Created by: {{ ws.createdBy?.email || 'Unknown' }}</p>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!workspaces?.length" class="text-center py-20 text-gray-500">
+    No workspaces found.
+  </div>
+</div>

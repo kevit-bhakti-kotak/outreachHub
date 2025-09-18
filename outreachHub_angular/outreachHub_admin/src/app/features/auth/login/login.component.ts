@@ -20,12 +20,17 @@ export class LoginComponent {
   ) {}
 
   onLogin() {
-    if (this.loginForm.invalid) return;
-    const { email, password } = this.loginForm.value;
+  if (this.loginForm.invalid) return;
+  const { email, password } = this.loginForm.value;
 
-    this.authService.login(email!, password!).subscribe({
-      next: () => this.router.navigate(['/workspaces']),
-      error: (err) => alert('Login failed: ' + (err.error?.message || 'Unknown error'))
-    });
-  }
+  this.authService.login(email!, password!).subscribe({
+    next: (user) => {
+      if (user?.isAdmin) {
+        this.router.navigate(['/workspaces']); // ✅ only navigate once admin check is done
+      }
+    },
+    error: (err) => alert('Login failed: ' + (err.error?.message || 'Unknown error'))
+  });
+}
+
 }

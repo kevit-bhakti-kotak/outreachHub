@@ -1,1 +1,94 @@
-<p>workspace-detail works!</p>
+<div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6" [formGroup]="workspaceForm">
+
+  <!-- Left: Workspace Info -->
+  <div class="bg-white shadow rounded-xl p-6 border border-[var(--oh-border)]">
+    <h2 class="text-2xl font-semibold text-[var(--oh-navy)] mb-4">Workspace Info</h2>
+
+    <!-- Name -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium">Name</label>
+      <input formControlName="name"
+             class="w-full border border-gray-300 rounded px-3 py-2"
+             [readonly]="!editMode"/>
+    </div>
+
+    <!-- CreatedBy -->
+    <p><strong>Created By:</strong> {{ workspace?.createdBy?.email }}</p>
+    <p><strong>Created At:</strong> {{ workspace?.createdAt | date }}</p>
+
+    <div class="mt-6 flex gap-3">
+      <button *ngIf="!editMode"
+              (click)="enableEdit()"
+              class="px-4 py-2 rounded-lg bg-[var(--oh-primary)] text-white hover:bg-[var(--oh-primary-dark)]">
+        ✎ Edit Workspace
+      </button>
+
+      <button *ngIf="editMode"
+              (click)="saveWorkspace()"
+              class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+              [disabled]="workspaceForm.invalid">
+        💾 Save
+      </button>
+
+      <button (click)="deleteWorkspace()"
+              class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">
+        🗑 Delete
+      </button>
+    </div>
+  </div>
+
+  <!-- Right: Users -->
+  <div class="bg-white shadow rounded-xl p-6 border border-[var(--oh-border)]" [formGroup]="usersForm">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold text-[var(--oh-navy)]">Users</h2>
+      <button (click)="addUserField()"
+              class="px-3 py-1 rounded-lg bg-[var(--oh-primary)] text-white hover:bg-[var(--oh-primary-dark)]">
+        ＋ Add User
+      </button>
+    </div>
+
+    <!-- Users list (FormArray) -->
+    <div formArrayName="users" class="space-y-3">
+      <div *ngFor="let userCtrl of users.controls; let i = index" [formGroupName]="i"
+           class="p-3 border rounded-lg flex justify-between items-center">
+        <div>
+          <input formControlName="email" placeholder="Email"
+                 class="border px-2 py-1 rounded w-48"/>
+        </div>
+        <div class="flex gap-2 items-center">
+          <select formControlName="role" class="border rounded px-2 py-1 text-sm"
+                  (change)="onRoleChanged(userCtrl.value, $any($event.target).value)">
+            <option value="Editor">Editor</option>
+            <option value="Viewer">Viewer</option>
+          </select>
+         <button 
+  type="button" 
+  (click)="removeUserField(i, userCtrl.value)"
+  class="px-2 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 text-sm">
+  Remove
+</button>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Users -->
+    <div class="mt-4 flex justify-end">
+      <button (click)="saveUsers()"
+              class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+              [disabled]="usersForm.invalid">
+        💾 Save Users
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Create user modal -->
+<app-create-user-modal
+  *ngIf="creatingUser && currentPending"
+  [email]="currentPending.email"
+  [role]="currentPending.role"
+  [workspaceId]="id"
+  (created)="onUserCreated($event)"
+  (cancelled)="onModalCancelled()">
+</app-create-user-modal>

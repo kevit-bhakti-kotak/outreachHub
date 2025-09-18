@@ -12,18 +12,24 @@ export class CampaignsService {
 
   constructor(private http: HttpClient) {}
 
-  launchCampaign(id: string) {
-  return this.http.patch(`/api/campaigns/${id}/launch`, {});
+  launchCampaign(id: string): Observable<Campaign> {
+  return this.http.patch<Campaign>(`${this.baseUrl}/${id}/launch`, {});
 }
 
-  getAllByWorkspace(workspaceId: string): Observable<Campaign[]> {
-    return this.http.get<Campaign[]>(`${this.baseUrl}?workspaceId=${workspaceId}`);
+  getCampaigns(page: number, limit: number, workspaceId?: string): Observable<{ data: Campaign[]; total: number }> {
+    let url = `${this.baseUrl}?page=${page}&limit=${limit}`;
+    if (workspaceId) {
+      url += `&workspaceId=${workspaceId}`;
+    }
+    return this.http.get<{ data: Campaign[]; total: number }>(url);
   }
 
-  getCampaigns(page: number, limit: number) {
-  return this.http.get(`/api/campaigns?page=${page}&limit=${limit}`);
-}
 
+  getAllByWorkspace(workspaceId: string, page = 1, limit = 5): Observable<{ data: Campaign[]; total: number }> {
+    return this.http.get<{ data: Campaign[]; total: number }>(
+      `${this.baseUrl}?workspaceId=${workspaceId}&page=${page}&limit=${limit}`
+    );
+  }
 
   get(id: string): Observable<Campaign> {
     return this.http.get<Campaign>(`${this.baseUrl}/${id}`);
@@ -40,4 +46,8 @@ export class CampaignsService {
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+  copyCampaign(id: string): Observable<Campaign> {
+  return this.http.post<Campaign>(`${this.baseUrl}/${id}/copy`, {});
+}
+
 }

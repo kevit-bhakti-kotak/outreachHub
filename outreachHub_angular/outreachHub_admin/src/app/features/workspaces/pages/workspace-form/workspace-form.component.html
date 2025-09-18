@@ -1,1 +1,15 @@
-<p>workspace-form works!</p>
+<h3 class="text-lg font-semibold mb-4">
+  {{ mode === 'create' ? 'Create Workspace' : mode === 'edit' ? 'Edit Workspace' : 'View Workspace' }}
+</h3>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+  <div>
+    <label class="block text-sm mb-1">Name</label>
+    <input formControlName="name" [readonly]="mode==='view'" class="w-full border px-3 py-2 rounded"/>
+  </div>
+
+  <div class="flex justify-end space-x-2">
+    <button type="button" (click)="cancel.emit()" class="px-4 py-2 border rounded">Cancel</button>
+    <button *ngIf="mode!=='view'" type="submit" class="px-4 py-2 bg-[var(--oh-primary)] text-white rounded">Save</button>
+  </div>
+</form>

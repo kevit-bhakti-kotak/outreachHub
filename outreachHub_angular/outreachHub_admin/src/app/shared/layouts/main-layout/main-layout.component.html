@@ -1,0 +1,15 @@
+<div class="flex">
+  <!-- Sidebar -->
+  <app-sidebar [(isOpen)]="isSidebarOpen"></app-sidebar>
+
+  <!-- Main area -->
+  <div [ngClass]="{ 'ml-64': isSidebarOpen, 'ml-20': !isSidebarOpen }" class="flex-1 transition-all duration-300">
+    <!-- Header -->
+    <app-header [isSidebarOpen]="isSidebarOpen"></app-header>
+
+    <!-- Content -->
+    <main class="pt-16 px-4 sm:px-6 lg:px-8 bg-white h-screen overflow-y-auto">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

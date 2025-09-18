@@ -32,14 +32,14 @@ limit = 5;
 total = 0;
 
 
-fetchCampaigns() {
-  this.campaignService
-    .getCampaigns(this.page, this.limit) // assuming backend supports pagination
-    .subscribe((res: any) => {
-      this.campaigns = res.data;
-      this.total = res.total; // total campaigns from backend
-    });
-}
+// fetchCampaigns() {
+//   this.campaignService
+//     .getCampaigns(this.page, this.limit) // assuming backend supports pagination
+//     .subscribe((res: any) => {
+//       this.campaigns = res.data;
+//       this.total = res.total; // total campaigns from backend
+//     });
+// }
 
 onPageChange(next: boolean) {
   if (next) {
@@ -47,12 +47,14 @@ onPageChange(next: boolean) {
   } else {
     this.page--;
   }
-  this.fetchCampaigns();
+    const wsId = this.workspaceService.getWorkspaceId();
+    if (wsId) this.loadCampaigns(wsId);
 }
 
 
   ngOnInit() {
-    this.fetchCampaigns();
+    const wsId = this.workspaceService.getWorkspaceId();
+    if (wsId) this.loadCampaigns(wsId);
     this.sub.add(
       this.workspaceService.selectedWorkspace$.subscribe((ws) => {
         this.currentWorkspace = ws;
@@ -61,25 +63,25 @@ onPageChange(next: boolean) {
         } else {
           this.campaigns = [];
         }
-        
+
       })
     );
   }
 
-  ngOnDestroy() {
-    this.sub.unsubscribe();
-  }
-
   // ---------- Data loading ----------
-   loadCampaigns(workspaceId: string) {
-    this.campaignService.getAllByWorkspace(workspaceId).subscribe({
-      next: (data) => {
-        this.campaigns = (data ?? []).map((c) => ({ ...c, audienceCount: 0 }));
-        this.campaigns.forEach((c) => this.fetchAudienceCount(c));
-      },
-      error: (err) => console.error('[CampaignList] Failed to fetch campaigns:', err),
-    });
-  }
+loadCampaigns(workspaceId: string) {
+  this.campaignService.getAllByWorkspace(workspaceId, this.page, this.limit).subscribe({
+    next: (res) => {
+      const campaigns: Campaign[] = res.data ?? [];
+      this.campaigns = campaigns.map((c: Campaign) => ({ ...c, audienceCount: 0 }));
+      this.total = res.total ?? campaigns.length;
+      this.campaigns.forEach((c) => this.fetchAudienceCount(c));
+    },
+    error: (err) => console.error('[CampaignList] Failed to fetch campaigns:', err),
+  });
+}
+
+
 
   private fetchAudienceCount(c: Campaign) {
     const wsId = this.workspaceService.getWorkspaceId();
@@ -172,11 +174,66 @@ closeForm() {
     return typeof c.templateId === 'string' ? c.templateId : c.templateId.name ?? '—';
   }
 
-  launchCampaign(c: Campaign) {
+  // inside CampaignListComponent
+
+private pollingSubs: { [campaignId: string]: Subscription } = {};
+
+launchCampaign(c: Campaign) {
+  if (c.status !== 'Draft') return;
+
+  // disable the button immediately (optional)
+  c.status = 'Running';
+
   this.campaignService.launchCampaign(c._id).subscribe({
-    next: () => this.loadCampaigns(this.currentWorkspace!.workspaceId),
-    error: (err) => console.error('Failed to launch campaign', err),
+    next: () => {
+      // Start polling status
+      const poll$ = interval(3000); // every 3 seconds
+      this.pollingSubs[c._id] = poll$.subscribe(() => {
+        this.campaignService.get(c._id).subscribe({
+          next: (res: Campaign) => {
+            c.status = res.status;
+
+           if (res.status === 'Completed') {
+              this.pollingSubs[c._id]?.unsubscribe();
+              delete this.pollingSubs[c._id];
+
+              const wsId = this.currentWorkspace?.workspaceId;
+              if (wsId) {
+                this.loadCampaigns(wsId); // ✅ reload with correct workspace filter
+              }
+            }
+
+          },
+          error: (err) => console.error('Status polling failed', err),
+        });
+      });
+    },
+    error: (err) => {
+      console.error('Failed to launch campaign', err);
+      c.status = 'Draft'; // revert on failure
+    },
   });
 }
+
+// unsubscribe on destroy
+ngOnDestroy() {
+  this.sub.unsubscribe();
+  Object.values(this.pollingSubs).forEach((s) => s.unsubscribe());
+}
+copyCampaign(campaign: Campaign) {
+  this.campaignService.copyCampaign(campaign._id).subscribe({
+    next: (newCampaign) => {
+      // Either push locally
+      this.campaigns.unshift(newCampaign);
+      // OR reload from backend for accuracy:
+        const wsId = this.currentWorkspace?.workspaceId;
+              if (wsId) {
+                this.loadCampaigns(wsId); // ✅ reload with correct workspace filter
+              }    },
+    error: (err) => console.error('Failed to copy campaign', err),
+  });
+}
+
+
 
 }

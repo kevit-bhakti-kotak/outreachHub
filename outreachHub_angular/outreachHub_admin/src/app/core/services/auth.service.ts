@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, switchMap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -27,11 +27,10 @@ export class AuthService {
         if (res.token) {
           this.logout(false); // clear old session
           localStorage.setItem('adminToken', res.token);
-
           this.autoLogoutOnExpiry();
-          this.fetchAdminUser(res.token); // fetch user & verify isAdmin
         }
-      })
+      }),
+      switchMap((res) => this.fetchAdminUser(res.token)) // ⬅️ wait until user is fetched
     );
   }
 
@@ -45,33 +44,28 @@ export class AuthService {
   }
 
   // 🔹 Fetch user & check isAdmin
-  fetchAdminUser(token?: any) {
+  fetchAdminUser(token?: any): Observable<any> {
     token = token || this.getToken();
-    if (!token) return;
+    if (!token) throw new Error('No token found');
 
     const payload = this.decodeToken(token);
     const userId = payload?.sub;
-    if (!userId) return;
+    if (!userId) throw new Error('Invalid token payload');
 
     const headers = { Authorization: `Bearer ${token}` };
 
-    this.http.get<any>(`${this.apiUrl}/users/${userId}`, { headers }).subscribe({
-      next: (user) => {
+    return this.http.get<any>(`${this.apiUrl}/users/${userId}`, { headers }).pipe(
+      tap((user) => {
         if (!user.isAdmin) {
-          console.error('❌ Not an admin, redirecting...');
-          this.router.navigate(['/no-rights']); // 🔹 redirect to "no rights" page
+          console.error('❌ Not an admin');
+          this.router.navigate(['/no-rights']);
           return;
         }
 
         localStorage.setItem('adminUser', JSON.stringify(user));
         this.currentUserSubject.next(user);
-        this.router.navigate(['/dashboard'])
-      },
-      error: (err) => {
-        console.error('❌ Failed to fetch admin user:', err);
-        this.logout();
-      }
-    });
+      })
+    );
   }
 
   // 🔹 Helpers
@@ -98,7 +92,6 @@ export class AuthService {
     try {
       const payload = this.decodeToken(token);
       if (!payload?.exp) return true;
-
       return Date.now() > payload.exp * 1000;
     } catch {
       return true;
@@ -122,11 +115,15 @@ export class AuthService {
     }
   }
 
+  getUserId(): string | null {
+    const user = this.getCurrentUser();
+    return user?._id ?? null;
+  }
+
   logout(redirect: boolean = true) {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
     this.currentUserSubject.next(null);
-
     if (redirect) this.router.navigate(['/auth/login']);
   }
 }

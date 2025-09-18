@@ -1,32 +1,70 @@
-import { HttpClient } from "@angular/common/http";
-import { AuthService } from "./auth.service";
-import { Workspace } from "../models/workspace.model";
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { AppConfig } from '../../../../src/config';
+
+export interface Workspace {
+  _id: string;
+  name: string;
+  createdBy: { _id: string; email: string };
+}
 
 @Injectable({ providedIn: 'root' })
-export class WorkspaceService {
-  private apiUrl = 'http://localhost:2000/workspaces';
+export class AdminWorkspaceService {
+  private baseUrl = `${AppConfig.apiUrl}/workspaces`;
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(private http: HttpClient) {}
 
-  getAll() {
-    return this.http.get<Workspace[]>(this.apiUrl);
+  getAll(): Observable<Workspace[]> {
+    return this.http.get<Workspace[]>(this.baseUrl);
   }
 
-  // create(ws: Partial<Workspace>) {
-  //   const adminId = this.auth.getAdminId();
-  //   return this.http.post(this.apiUrl, { ...ws, createdBy: adminId });
-  // }
-
-  update(id: string, ws: Partial<Workspace>) {
-    return this.http.put(`${this.apiUrl}/${id}`, ws);
+  getById(id: string): Observable<Workspace> {
+    return this.http.get<Workspace>(`${this.baseUrl}/${id}`);
   }
 
-  delete(id: string) {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  create(workspace: { name: string }): Observable<Workspace> {
+    return this.http.post<Workspace>(this.baseUrl, workspace);
   }
 
-  getById(id: string) {
-    return this.http.get<Workspace>(`${this.apiUrl}/${id}`);
+  update(id: string, workspace: { name: string }): Observable<Workspace> {
+    return this.http.patch<Workspace>(`${this.baseUrl}/${id}`, workspace);
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+  addUsers(workspaceId: string, users: { email: string; role: string }[]): Observable<any[]> {
+    return this.http.post<any[]>(`${this.baseUrl}/${workspaceId}/users`, { users });
+  }
+
+   removeUser(workspaceId: string, userId: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/${workspaceId}/users/${userId}`);
+  }
+  // create a user (optionally include workspaces to auto-assign)
+ // Add existing user to workspace
+addUserToWorkspace(workspaceId: string, email: string, role: 'Editor' | 'Viewer') {
+  return this.http.post(`/api/workspaces/${workspaceId}/users`, {
+    users: [{ email, role }]
+  });
+}
+
+// Create brand new user in DB
+createUser(payload: any) {
+  return this.http.post(`${AppConfig.apiUrl}/users`, payload,{
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  });
+}
+//update user role in ws
+updateUserRole(workspaceId: string, userId: string, newRole: 'Editor' | 'Viewer'): Observable<any> {
+    const token = localStorage.getItem('token'); // JWT from login
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.patch(
+      `${AppConfig.apiUrl}/workspaces/${workspaceId}/users/${userId}`,
+      { role: newRole },
+      { headers }
+    );
+  }
+
 }
