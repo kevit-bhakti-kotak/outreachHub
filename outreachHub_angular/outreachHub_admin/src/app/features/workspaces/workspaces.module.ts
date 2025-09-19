@@ -7,6 +7,7 @@ import { WorkspaceFormComponent } from './pages/workspace-form/workspace-form.co
 import { WorkspaceDetailComponent } from './pages/workspace-detail/workspace-detail.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CreateUserModalComponent } from './pages/create-user-modal/create-user-modal.component';
+import { NoAccessComponent } from './pages/no-access/no-access.component';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { CreateUserModalComponent } from './pages/create-user-modal/create-user-
     WorkspaceListComponent,
     WorkspaceFormComponent,
     WorkspaceDetailComponent,
-    CreateUserModalComponent
+    CreateUserModalComponent,
+    NoAccessComponent
   ],
   imports: [
     CommonModule,

@@ -25,6 +25,7 @@ const routes: Routes = [
     children: [
       { path: 'dashboard', loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [AuthGuard] },
       { path: 'workspaces', loadChildren: () => import('./features/workspaces/workspaces.module').then(m => m.WorkspacesModule), canActivate: [AuthGuard] },
+
     ]
   },
 

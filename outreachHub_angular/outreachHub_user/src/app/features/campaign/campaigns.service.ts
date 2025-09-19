@@ -24,7 +24,6 @@ export class CampaignsService {
     return this.http.get<{ data: Campaign[]; total: number }>(url);
   }
 
-
   getAllByWorkspace(workspaceId: string, page = 1, limit = 5): Observable<{ data: Campaign[]; total: number }> {
     return this.http.get<{ data: Campaign[]; total: number }>(
       `${this.baseUrl}?workspaceId=${workspaceId}&page=${page}&limit=${limit}`
@@ -49,5 +48,4 @@ export class CampaignsService {
   copyCampaign(id: string): Observable<Campaign> {
   return this.http.post<Campaign>(`${this.baseUrl}/${id}/copy`, {});
 }
-
 }

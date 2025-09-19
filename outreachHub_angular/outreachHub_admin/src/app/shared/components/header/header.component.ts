@@ -69,24 +69,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private deriveUserName() {
-    const storedName = localStorage.getItem('username');
-    const email = localStorage.getItem('email');
-
-    if (storedName && storedName.trim().length) {
-      this.userName = storedName;
-      return;
+  const adminUserRaw = localStorage.getItem('adminUser');
+  if (adminUserRaw) {
+    try {
+      const adminUser = JSON.parse(adminUserRaw);
+      if (adminUser?.name) {
+        this.userName = adminUser.name;
+        return;
+      }
+    }catch (e) {
+      console.warn('Invalid adminUser in localStorage', e);
     }
-
-    if (email && email.includes('@')) {
-      const namePart = email.split('@')[0];
-      const cleaned = namePart.replace(/[\.\_\-]/g, ' ').trim();
-      this.userName = cleaned
-        .split(/\s+/)
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
-      return;
-    }
-
+  }
     this.userName = 'User';
   }
 }

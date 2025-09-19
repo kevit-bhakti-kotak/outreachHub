@@ -17,20 +17,20 @@
     <p><strong>Created At:</strong> {{ workspace?.createdAt | date }}</p>
 
     <div class="mt-6 flex gap-3">
-      <button *ngIf="!editMode"
+      <button *ngIf="!editMode && isOwner()"
               (click)="enableEdit()"
               class="px-4 py-2 rounded-lg bg-[var(--oh-primary)] text-white hover:bg-[var(--oh-primary-dark)]">
         ✎ Edit Workspace
       </button>
 
-      <button *ngIf="editMode"
+      <button *ngIf="editMode && isOwner()"
               (click)="saveWorkspace()"
               class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
               [disabled]="workspaceForm.invalid">
         💾 Save
       </button>
 
-      <button (click)="deleteWorkspace()"
+      <button *ngIf="isOwner()" (click)="deleteWorkspace()"
               class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">
         🗑 Delete
       </button>

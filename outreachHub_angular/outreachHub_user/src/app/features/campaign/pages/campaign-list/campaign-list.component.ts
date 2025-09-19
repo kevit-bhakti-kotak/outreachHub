@@ -65,23 +65,23 @@ onPageChange(next: boolean) {
         }
 
       })
+
     );
+
   }
 
   // ---------- Data loading ----------
-loadCampaigns(workspaceId: string) {
-  this.campaignService.getAllByWorkspace(workspaceId, this.page, this.limit).subscribe({
-    next: (res) => {
-      const campaigns: Campaign[] = res.data ?? [];
-      this.campaigns = campaigns.map((c: Campaign) => ({ ...c, audienceCount: 0 }));
-      this.total = res.total ?? campaigns.length;
-      this.campaigns.forEach((c) => this.fetchAudienceCount(c));
-    },
-    error: (err) => console.error('[CampaignList] Failed to fetch campaigns:', err),
-  });
-}
 
-
+  loadCampaigns(workspaceId: string) {
+    this.campaignService.getAllByWorkspace(workspaceId, this.page, this.limit).subscribe({
+      next: (data) => {
+        this.campaigns = (data?.data ?? []).map((c: Campaign) => ({ ...c, audienceCount: 0 }));
+        this.total = data?.total ?? 0;
+        this.campaigns.forEach((c) => this.fetchAudienceCount(c));
+      },
+      error: (err) => console.error('[CampaignList] Failed to fetch campaigns:', err),
+    });
+  }
 
   private fetchAudienceCount(c: Campaign) {
     const wsId = this.workspaceService.getWorkspaceId();
@@ -229,11 +229,11 @@ copyCampaign(campaign: Campaign) {
         const wsId = this.currentWorkspace?.workspaceId;
               if (wsId) {
                 this.loadCampaigns(wsId); // ✅ reload with correct workspace filter
-              }    },
+              }
+    },
     error: (err) => console.error('Failed to copy campaign', err),
   });
+
 }
-
-
 
 }

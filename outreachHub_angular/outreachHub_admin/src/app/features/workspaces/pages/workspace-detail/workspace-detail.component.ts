@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AdminWorkspaceService } from '../../../../core/services/workspace.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-workspace-detail',
@@ -14,6 +15,7 @@ export class WorkspaceDetailComponent implements OnInit {
   usersForm!: FormGroup;
   editMode = false;
   id!: string;
+  currentUserId: string | null = null;
 
   creatingUser = false;
   pendingUsersQueue: { email: string; role: 'Editor'|'Viewer' }[] = [];
@@ -24,11 +26,13 @@ export class WorkspaceDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private router: Router,
-    private wsService: AdminWorkspaceService
+    private wsService: AdminWorkspaceService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id')!;
+    this.currentUserId = this.authService.getUserId();
     this.initForms();
     this.loadWorkspace();
   }
@@ -62,11 +66,23 @@ export class WorkspaceDetailComponent implements OnInit {
             role: [u.role, Validators.required]
           }));
         });
+
+        // Disable edit if not owner
+        if (this.currentUserId !== ws.createdBy?._id) {
+          this.editMode = false;
+          this.workspaceForm.disable();
+          this.usersForm.disable();
+        }
       }
     });
   }
 
+  isOwner(): boolean {
+    return this.workspace?.createdBy?._id === this.currentUserId;
+  }
+
   enableEdit() {
+    if (!this.isOwner()) return;
     this.editMode = true;
   }
 
@@ -81,6 +97,7 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   deleteWorkspace() {
+    if (!this.isOwner()) return;
     if (!confirm('Delete this workspace?')) return;
     this.http.delete(`http://localhost:2000/workspaces/${this.id}`).subscribe({
       next: () => this.router.navigate(['/workspaces'])

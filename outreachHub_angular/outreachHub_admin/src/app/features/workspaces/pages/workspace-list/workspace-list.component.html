@@ -10,8 +10,8 @@
   <!-- Grid of Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     <div *ngFor="let ws of workspaces"
-      (click)="openDetail(ws._id)"
-      class="cursor-pointer p-4 bg-white shadow rounded-xl border border-[var(--oh-border)] hover:shadow-lg transition">
+      class="p-4 bg-white shadow rounded-xl border border-[var(--oh-border)] hover:shadow-lg transition cursor-pointer"
+      (click)="openWorkspace(ws)">
       
       <h3 class="text-lg font-bold text-[var(--oh-navy)]">{{ ws.name }}</h3>
       <p class="text-sm text-gray-500">Created by: {{ ws.createdBy?.email || 'Unknown' }}</p>

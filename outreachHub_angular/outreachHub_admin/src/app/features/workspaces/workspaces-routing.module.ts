@@ -3,11 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { WorkspaceListComponent } from './pages/workspace-list/workspace-list.component';
 import { WorkspaceFormComponent } from './pages/workspace-form/workspace-form.component';
 import { WorkspaceDetailComponent } from './pages/workspace-detail/workspace-detail.component';
-// import { AdminGuard } from '../../core/guards/admin.guard';
+import { NoAccessComponent } from './pages/no-access/no-access.component';
 
 const routes: Routes = [
   { path: '', component: WorkspaceListComponent, canActivate: [] },
   { path: 'create', component: WorkspaceFormComponent, canActivate: [] },
+  { path: 'no-access', component: NoAccessComponent },
   { path: ':id', component: WorkspaceDetailComponent, canActivate: [] },
   { path: ':id/edit', component: WorkspaceFormComponent, canActivate: [] }
 ];

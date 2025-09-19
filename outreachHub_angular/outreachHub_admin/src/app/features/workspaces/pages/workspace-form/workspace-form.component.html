@@ -9,7 +9,9 @@
   </div>
 
   <div class="flex justify-end space-x-2">
-    <button type="button" (click)="cancel.emit()" class="px-4 py-2 border rounded">Cancel</button>
-    <button *ngIf="mode!=='view'" type="submit" class="px-4 py-2 bg-[var(--oh-primary)] text-white rounded">Save</button>
+    <button type="button" (click)="onCancel()" class="px-4 py-2 border rounded">Cancel</button>
+    <button *ngIf="mode!=='view'" type="submit" [disabled]="isLoading" class="px-4 py-2 bg-[var(--oh-primary)] text-white rounded">
+      {{ isLoading ? 'Saving...' : 'Save' }}
+    </button>
   </div>
 </form>
