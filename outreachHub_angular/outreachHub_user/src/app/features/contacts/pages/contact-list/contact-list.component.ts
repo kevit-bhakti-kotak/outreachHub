@@ -73,7 +73,6 @@ export class ContactListComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.workspaceService.selectedWorkspace$.subscribe(ws => {
         if (ws) {
-          console.log('🔄 Workspace switched:', ws.workspaceId);
           this.page = 1; // reset to first page
           this.contactService.loadContacts({ page: this.page, limit: this.limit });
         } else {

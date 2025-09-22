@@ -17,7 +17,7 @@ export class ContactService {
   private metaSubject = new BehaviorSubject<{ total: number; page: number; limit: number }>({
     total: 0,
     page: 1,
-    limit: 10,
+    limit: 5,
   });
   public meta$ = this.metaSubject.asObservable();
 
@@ -37,7 +37,7 @@ export class ContactService {
         debounceTime(300),
         switchMap((params) =>
           // switchMap -> cancel previous fetch if a new one comes in
-          this.fetchContacts(params.page ?? 1, params.limit ?? 10, params.q ?? '', params.tags ?? [])
+          this.fetchContacts(params.page ?? 1, params.limit ?? 5, params.q ?? '', params.tags ?? [])
         )
       )
       .subscribe({
@@ -70,7 +70,7 @@ export class ContactService {
   // returns an observable for use in components/test; also updates subjects
   fetchContacts(
   page = 1,
-  limit = 10,
+  limit = 5,
   q = '',
   tags: string[] = []
 ): Observable<IPaginatedResponse<IContact>> {
@@ -149,10 +149,6 @@ export class ContactService {
       })
     );
   }
-  // get all tags in workspace
-getTags(workspaceId: string): Observable<string[]> {
-  return this.http.get<string[]>(`${this.baseUrl}/tags/${workspaceId}`);
-}
 
 // count contacts by tags
 countByTags(workspaceId: string, tags: string[]): Observable<number> {
