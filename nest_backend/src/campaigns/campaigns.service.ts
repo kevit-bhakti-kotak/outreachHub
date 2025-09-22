@@ -80,20 +80,19 @@ export class CampaignsService {
       tags: { $in: campaign.selectedTags },
     });
 
-    // 4. Create campaign messages snapshot
-    const messages = contacts.map(c => ({
+    // 4. Create ONE campaign message with ALL contact IDs
+    const campaignMessage = {
       workspace: campaign.workspaceId,
       campaign: campaign._id,
-      contactIds: [c._id],
-      createdBy: new Types.ObjectId(userId),
+      contactIds: contacts.map(c => c._id), // All contact IDs in one array
+      createdBy: new Types.ObjectId(userId), // Consistent createdBy
       messageContent: template
-  ? template.message.text.replace('{{name}}', c.name) // use message.text
-  : `Hello ${c.name}, from ${campaign.name}`, //does not have text+img logic yet...
-
+        ? template.message.text.replace('{{name}}', 'there') // Generic personalization
+        : `Hello there, from ${campaign.name}`, // Generic message
       sentAt: new Date(),
-    }));
+    };
 
-    await this.campaignMessageModel.insertMany(messages);
+    await this.campaignMessageModel.create(campaignMessage);
 
     // 5. Fake complete after 5s (simulate async send)
     setTimeout(async () => {
@@ -122,8 +121,4 @@ async copyCampaign(id: string, userId: string) {
 
   return copy.save();
 }
-
-
-
-
 }

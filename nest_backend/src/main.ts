@@ -17,7 +17,7 @@ app.useGlobalPipes(
   logger.log('Application starting...');
 
    app.enableCors({
-    origin: "*", // or your frontend domain
+    origin: "http://localhost:4200", // or your frontend domain
     credentials: true,
     allowedHeaders: [
       'Content-Type',

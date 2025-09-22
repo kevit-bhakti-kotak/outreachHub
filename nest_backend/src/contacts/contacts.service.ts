@@ -51,17 +51,44 @@ async findByTags(workspaceId: string, tags: string[]): Promise<Contact[]> {
     return contact;
   }
   //paginated get by workspace...
-  async findByWorkspace(workspaceId: string, page = 1, limit = 10) {
+  // src/contacts/contacts.service.ts
+async findByWorkspace(
+  workspaceId: string,
+  page = 1,
+  limit = 5,
+  q?: string,
+  tags: string[] = []
+) {
   const skip = (page - 1) * limit;
 
+  // Build query
+  const query: any = {};
+
+  // workspaceId can be string or ObjectId - support both
+  query.workspaceId = workspaceId;
+
+
+  // text search (name or phoneNumber) - case-insensitive partial match
+  if (q && q.trim()) {
+    const re = new RegExp(q.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'); // escape user input
+    query.$or = [{ name: re }, { phoneNumber: re }];
+  }
+
+  // tags filter (any of the tags)
+  if (Array.isArray(tags) && tags.length > 0) {
+    query.tags = { $in: tags };
+  }
+  console.log('findByWorkspace query:', query);
+
   const [items, total] = await Promise.all([
+    
     this.contactModel
-      .find({ workspaceId })
+      .find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .exec(),
-    this.contactModel.countDocuments({ workspaceId }),
+    this.contactModel.countDocuments(query).exec(),
   ]);
 
   return {
@@ -71,6 +98,7 @@ async findByTags(workspaceId: string, tags: string[]): Promise<Contact[]> {
     limit,
   };
 }
+
 
 async update(id: string, updateDto: UpdateContactDto, userId: string){
   const contact = await this.contactModel.findById(id).exec();

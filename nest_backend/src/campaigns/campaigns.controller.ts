@@ -32,7 +32,7 @@ async getStatus(@Param('id') id: string) {
 }
 @Post(':id/copy')
 async copy(@Param('id') id: string, @Req() req) {
-  return this.campaignsService.copyCampaign(id, req.userId);
+  return this.campaignsService.copyCampaign(id, req.user.userId);
 }
 
 
@@ -48,7 +48,7 @@ async copy(@Param('id') id: string, @Req() req) {
 
   @Patch(':id/launch')
   async launch(@Param('id') id: string, @Req() req) {
-  return this.campaignsService.launchCampaign(id, req.user._id);
+  return this.campaignsService.launchCampaign(id, req.user.userId);
 }
 
 

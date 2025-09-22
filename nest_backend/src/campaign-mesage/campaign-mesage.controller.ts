@@ -22,7 +22,6 @@ import mongoose from 'mongoose';
 export class CampaignMesageController {
   constructor(private readonly campaignMessageService: CampaignMesageService) {}
 
-  /** Create a new message under a campaign */
   @Post()
   async create(
     @Param('campaignId') campaignId: string,
@@ -35,9 +34,9 @@ export class CampaignMesageController {
 
     return this.campaignMessageService.create({
       ...dto,
-      campaign: campaignId,        // 👈 from URL
-      createdBy: req.user.userId,  // 👈 logged-in user
-      workspace: dto.workspace,    // 👈 still from body
+      campaign: campaignId,        //from URL
+      createdBy: req.user.userId,  //logged-in user
+      workspace: dto.workspace,    //still from body
     });
   }
 

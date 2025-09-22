@@ -42,6 +42,20 @@ async findByTags(@Body() body: { workspaceId: string; tags: string[] }) {
   return this.contactsService.findByTags(body.workspaceId, body.tags || []);
 }
 
+  @Get('byWorkspace/:workspaceId')
+async findByWorkspace(
+  @Param('workspaceId') workspaceId: string,
+  @Query('page') page = 1,
+  @Query('limit') limit = 5,
+  @Query('q') q?: string,
+  @Query('tags') tags?: string,
+) {
+    const pageNum = Number(page) || 1;
+    const limitNum = Number(limit) || 5;
+    // tags may be comma-separated string
+    const tagsArray = typeof tags === 'string' && tags.length ? tags.split(',').map(t => t.trim()).filter(Boolean) : [];
+    return this.contactsService.findByWorkspace(workspaceId, pageNum, limitNum, q, tagsArray);
+  }
 
   @Get()
   async findAll() {
@@ -57,14 +71,7 @@ async findByTags(@Body() body: { workspaceId: string; tags: string[] }) {
             return findUser;
   }
 
- @Get('byWorkspace/:workspaceId')
-async findByWorkspace(
-  @Param('workspaceId') workspaceId: string,
-  @Query('page') page = 1,
-  @Query('limit') limit = 10,
-) {
-  return this.contactsService.findByWorkspace(workspaceId, Number(page), Number(limit));
-}
+ 
 @Patch(':id')
 async update(@Param('id') id: string, @Body() updateContactDto: UpdateContactDto, @Req() req: any) {
   return this.contactsService.update(id, updateContactDto, req.user.userId);

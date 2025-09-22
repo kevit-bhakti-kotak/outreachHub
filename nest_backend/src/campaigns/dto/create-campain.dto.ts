@@ -2,6 +2,7 @@
 import { IsString, IsOptional, IsEnum, IsArray, IsMongoId, IsDateString } from 'class-validator';
 
 export class CreateCampaignDto {
+  
   @IsString()
    name: string;
 
