@@ -27,45 +27,87 @@ export class AnalyticsService {
     // Filters for different collections
     // -------------------
     const workspaceFilterString = { workspaceId }; // For Campaigns & Contacts
-    const workspaceFilterObjectId = { workspace: new Types.ObjectId(workspaceId) }; // For CampaignMessages
-
     // -------------------
     // Campaigns per day
     // -------------------
-    const campaignsPerDay = await this.campaignModel.aggregate([
-      { $match: { ...workspaceFilterString, ...dateFilter } },
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]);
+   const campaignsPerDay = await this.campaignModel.aggregate([
+  { $match: { ...workspaceFilterString, ...dateFilter } },
+  {
+    $group: {
+      _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+      count: { $sum: 1 },
+    },
+  },
+  { $sort: { _id: 1 } },
+  {
+    $project: {
+      _id: 0,
+      date: '$_id',
+      count: 1,
+    },
+  },
+]);
 
     // -------------------
     // Messages by type (Text vs Text+Image)
     // -------------------
-    const messagesByTypeRaw = await this.messageModel.aggregate([
-  { $match: { workspace: workspaceFilterObjectId } },
+  // -------------------
+// Messages by type (from MessageTemplate via Campaign)
+// -------------------
+const messagesByTypeRaw = await this.messageModel.aggregate([
+  { $match: { workspace: workspaceId, ...dateFilter } },
+
+  // Join with Campaign
+  {
+    $lookup: {
+      from: 'campaigns',
+      localField: 'campaign',
+      foreignField: '_id',
+      as: 'campaign',
+    },
+  },
+  { $unwind: { path: '$campaign', preserveNullAndEmptyArrays: true } },
+
+  // Convert campaign.templateId (string) -> ObjectId
+  {
+    $addFields: {
+      campaignTemplateIdObj: {
+        $cond: [
+          { $eq: [{ $type: '$campaign.templateId' }, 'string'] },
+          { $toObjectId: '$campaign.templateId' },
+          '$campaign.templateId'
+        ],
+      },
+    },
+  },
+
+  // Lookup MessageTemplate using converted ObjectId
+  {
+    $lookup: {
+      from: 'messagetemplates',
+      localField: 'campaignTemplateIdObj',
+      foreignField: '_id',
+      as: 'template',
+    },
+  },
+  { $unwind: { path: '$template', preserveNullAndEmptyArrays: true } },
+
+  // Group by template.type
   {
     $group: {
-      _id: {
-        day: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-        type: "$type"
-      },
-      count: { $sum: 1 }
-    }
+      _id: '$template.type',
+      count: { $sum: 1 },
+    },
   },
-  { $sort: { "_id.day": 1 } }
 ]);
 
-    const messagesByType = ['Text', 'Text+Image'].map(type => {
-  const count = messagesByTypeRaw
-    .filter(m => m._id.type === type)
-    .reduce((sum, m) => sum + m.count, 0);
-  return { type, count };
+const messagesByType = ['Text', 'Text+Image'].map(type => {
+  // Map DB "Text-Image" → "Text+Image" for frontend
+  const dbType = type === 'Text+Image' ? 'Text-Image' : type;
+  const found = messagesByTypeRaw.find(m => m._id === dbType);
+  return { type, count: found ? found.count : 0 };
 });
+
 
     // -------------------
     // Contacts reached vs not reached
@@ -89,24 +131,25 @@ export class AnalyticsService {
       .find({ ...workspaceFilterString, ...dateFilter })
       .sort({ createdAt: -1 })
       .limit(5)
-      .select('name tags createdAt')
+      .select('name selectedTags createdAt')
       .lean();
 
     // -------------------
     // Top Tags
     // -------------------
-    const topTagsRaw = await this.contactModel.aggregate([
-      { $match: { ...workspaceFilterString, ...dateFilter } },
-      { $unwind: '$tags' },
-      {
-        $group: {
-          _id: '$tags',
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { count: -1 } },
-      { $limit: 5 },
-    ]);
+const topTagsRaw = await this.campaignModel.aggregate([
+  { $match: { ...workspaceFilterString, ...dateFilter } },
+  { $unwind: '$selectedTags' },
+  {
+    $group: {
+      _id: '$selectedTags',
+      count: { $sum: 1 },
+    },
+  },
+  { $sort: { count: -1 } },
+  { $limit: 5 },
+]);
+
 
     const topTags = topTagsRaw.map((t) => ({ tag: t._id, count: t.count }));
 
@@ -114,14 +157,15 @@ export class AnalyticsService {
     // Return full analytics
     // -------------------
     return {
-      campaignsPerDay,
-      messagesByType,
-      contactsReached: {
-        reached: reachedCount,
-        notReached: notReachedCount,
-      },
-      recentCampaigns,
-      topTags,
-    };
+  campaignsPerDay,
+  messagesByType,
+  contactsReached: {
+    reached: reachedCount,
+    notReached: notReachedCount,
+  },
+  recentCampaigns,
+  topTags: topTagsRaw.map(t => ({ tag: t._id, count: t.count })),
+};
+
   }
 }
