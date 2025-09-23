@@ -30,31 +30,35 @@ export class HomeComponent implements OnInit {
   recentCampaigns: { name: string; tags: string[] }[] = [];
   topTags: { tag: string; count: number }[] = [];
 
-  constructor(private analyticsService: AnalyticsService,
+  // Date filter
+  startDate?: string;
+  endDate?: string;
+
+  constructor(
+    private analyticsService: AnalyticsService,
     private workspaceService: WorkspaceService
   ) {}
 
- ngOnInit(): void {
-  // Subscribe to workspace changes
-  this.workspaceService.selectedWorkspace$.subscribe(ws => {
-    if (ws?.workspaceId) {
-      // Load analytics for the selected workspace
-      this.loadAnalytics(ws.workspaceId);
-    } else {
-      console.warn('No workspace selected yet.');
-    }
-  });
-}
+  ngOnInit(): void {
+    this.workspaceService.selectedWorkspace$.subscribe(ws => {
+      if (ws?.workspaceId) {
+        this.loadAnalytics(ws.workspaceId, this.startDate, this.endDate);
+      }
+    });
+  }
+
+  applyDateFilter() {
+    const wsId = this.workspaceService.getWorkspaceId();
+    if (!wsId) return;
+
+    this.loadAnalytics(wsId, this.startDate, this.endDate);
+  }
 
   loadAnalytics(workspaceId: string, startDate?: string, endDate?: string) {
     this.analyticsService.getWorkspaceAnalytics(workspaceId, startDate, endDate).subscribe({
       next: (data: WorkspaceAnalytics) => {
-        // Map campaignsPerDay to use 'date' instead of '_id'
-        const campaigns = data.campaignsPerDay.map(d => ({
-          date: d.date,
-          count: d.count
-        }));
-
+        // Campaigns per Day
+        const campaigns = data.campaignsPerDay.map(d => ({ date: d.date, count: d.count }));
         this.campaignsChartData = {
           labels: campaigns.map(c => c.date),
           datasets: [{
@@ -67,12 +71,11 @@ export class HomeComponent implements OnInit {
           }]
         };
 
-        // Messages by type (ensure both Text and Text+Image always exist)
+        // Messages by Type
         const messagesByType = ['Text', 'Text+Image'].map(type => {
           const found = data.messagesByType.find(m => m.type === type);
           return { type, count: found ? found.count : 0 };
         });
-
         this.messagesChartData = {
           labels: messagesByType.map(m => m.type),
           datasets: [{
@@ -82,7 +85,7 @@ export class HomeComponent implements OnInit {
           }]
         };
 
-        // Contacts reached
+        // Contacts
         this.contactsChartData = {
           labels: ['Reached', 'Not Reached'],
           datasets: [{
@@ -97,12 +100,9 @@ export class HomeComponent implements OnInit {
           tags: c.selectedTags || c.tags || []
         }));
 
-        this.topTags = data.topTags.map(t => ({
-          tag: t.tag,
-          count: t.count
-        }));
+        this.topTags = data.topTags.map(t => ({ tag: t.tag, count: t.count }));
       },
-      error: (err) => console.error('Analytics fetch failed', err)
+      error: err => console.error('Analytics fetch failed', err)
     });
   }
 }

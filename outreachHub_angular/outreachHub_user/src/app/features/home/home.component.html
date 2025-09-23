@@ -1,9 +1,19 @@
 <div class="home-container space-y-8">
-  <!-- Welcome -->
-  <section class="welcome bg-white shadow rounded-lg p-6">
-    <p class="text-sm text-gray-600">
+  <!-- Welcome + Date Filter -->
+  <section class="welcome bg-white shadow rounded-lg p-6 flex flex-col md:flex-row md:justify-between md:items-center">
+    <p class="text-sm text-gray-600 mb-4 md:mb-0">
       Here’s your latest workspace analytics overview.
     </p>
+
+    <!-- Date Range Filter -->
+    <div class="flex items-center gap-2">
+      <input type="date" [(ngModel)]="startDate" class="border rounded px-2 py-1 text-sm" />
+      <span class="text-gray-500">to</span>
+      <input type="date" [(ngModel)]="endDate" class="border rounded px-2 py-1 text-sm" />
+      <button (click)="applyDateFilter()" class="bg-[#EB8A90] text-white px-3 py-1 rounded hover:bg-[#d7707d] text-sm">
+        Apply
+      </button>
+    </div>
   </section>
 
   <!-- Charts Section -->
