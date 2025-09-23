@@ -60,7 +60,18 @@
         <tbody>
           <tr *ngFor="let c of recentCampaigns" class="border-b">
             <td class="p-2">{{ c.name }}</td>
-            <td class="p-2">{{ c.tags }}</td>
+            <td class="p-2">
+              <div class="flex flex-wrap gap-1">
+                <span *ngFor="let tag of c.tags"
+                      class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                  {{ tag }}
+                </span>
+                <span *ngIf="c.tags.length === 0"
+                      class="text-gray-400 text-sm italic">
+                  No tags
+                </span>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>

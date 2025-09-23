@@ -1,4 +1,3 @@
-// app/features/campaigns/model/campaign.model.ts
 export interface Campaign {
   _id: string;
   name: string;
@@ -10,7 +9,5 @@ export interface Campaign {
   createdBy?: string;
   createdAt?: string;
   updatedAt?: string;
-
-  // UI helper fields
-  audienceCount?: number; // 🔹 add this
+  audienceCount?: number; 
 }

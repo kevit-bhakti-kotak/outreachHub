@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { AnalyticsService, WorkspaceAnalytics } from '../../core/services/analytics.service';
+import { WorkspaceService } from '../../core/services/workspace.service';
 
 @Component({
   selector: 'app-home',
@@ -29,30 +30,21 @@ export class HomeComponent implements OnInit {
   recentCampaigns: { name: string; tags: string[] }[] = [];
   topTags: { tag: string; count: number }[] = [];
 
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(private analyticsService: AnalyticsService,
+    private workspaceService: WorkspaceService
+  ) {}
 
-  ngOnInit(): void {
-    const selectedWorkspaceStr = localStorage.getItem('selectedWorkspace');
-
-    if (!selectedWorkspaceStr) {
-      console.error('No selected workspace found in localStorage!');
-      return;
+ ngOnInit(): void {
+  // Subscribe to workspace changes
+  this.workspaceService.selectedWorkspace$.subscribe(ws => {
+    if (ws?.workspaceId) {
+      // Load analytics for the selected workspace
+      this.loadAnalytics(ws.workspaceId);
+    } else {
+      console.warn('No workspace selected yet.');
     }
-
-    try {
-      const wsObj = JSON.parse(selectedWorkspaceStr);
-      const workspaceId = wsObj.workspaceId;
-
-      if (!workspaceId) {
-        console.error('Workspace ID missing in localStorage object!');
-        return;
-      }
-
-      this.loadAnalytics(workspaceId);
-    } catch (err) {
-      console.error('Error parsing selectedWorkspace:', err);
-    }
-  }
+  });
+}
 
   loadAnalytics(workspaceId: string, startDate?: string, endDate?: string) {
     this.analyticsService.getWorkspaceAnalytics(workspaceId, startDate, endDate).subscribe({
@@ -102,7 +94,7 @@ export class HomeComponent implements OnInit {
         // Tables
         this.recentCampaigns = data.recentCampaigns.map(c => ({
           name: c.name,
-          tags: c.tags || []
+          tags: c.selectedTags || c.tags || []
         }));
 
         this.topTags = data.topTags.map(t => ({

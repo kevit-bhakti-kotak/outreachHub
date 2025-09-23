@@ -7,7 +7,7 @@ export interface WorkspaceAnalytics {
   campaignsPerDay: { date: string; count: number }[];
   messagesByType: { type: string; count: number }[];
   contactsReached: { reached: number; notReached: number };
-  recentCampaigns: { name: string; tags: string[] }[];
+  recentCampaigns: { name: string; tags?: string[]; selectedTags?: string[] }[];
   topTags: { tag: string; count: number }[];
 }
 
