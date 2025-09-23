@@ -1,0 +1,35 @@
+  <div class="bg-white rounded-xl shadow-lg max-w-2xl w-full p-6 relative">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold text-[var(--oh-text)]">Audience Contacts</h2>
+      <button (click)="handleClose()" class="text-gray-500 hover:text-gray-800">✕</button>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto max-h-[400px]">
+      <table class="w-full border border-gray-200 rounded-lg text-sm">
+        <thead class="bg-gray-100 text-gray-600">
+          <tr>
+            <th class="px-3 py-2 text-left">Name</th>
+            <th class="px-3 py-2 text-left">Phone</th>
+            <th class="px-3 py-2 text-left">Tags</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of contacts" class="border-b hover:bg-gray-50">
+            <td class="px-3 py-2">{{ c.name }}</td>
+            <td class="px-3 py-2">{{ c.phoneNumber || '—' }}</td>
+            <td class="px-3 py-2">
+              <ng-container *ngIf="c.tags?.length; else noTags">
+                <span *ngFor="let t of c.tags"
+                      class="inline-block bg-[var(--oh-peach)] text-[var(--oh-primary-dark)] text-xs font-medium px-2 py-1 rounded-full mr-1">
+                  {{ t }}
+                </span>
+              </ng-container>
+              <ng-template #noTags>—</ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

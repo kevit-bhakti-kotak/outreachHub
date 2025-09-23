@@ -1,0 +1,20 @@
+<div class="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow">
+  <button class="text-sm mb-4" (click)="back()">← Back to campaigns</button>
+
+  <div *ngIf="campaign; else loading">
+    <h2 class="text-2xl font-semibold">{{ campaign.name }}</h2>
+    <p class="text-sm text-gray-500">{{ campaign.description }}</p>
+
+    <div class="mt-4">
+      <p><strong>Status:</strong> {{ campaign.status }}</p>
+      <p><strong>Template:</strong> {{ campaign.templateId?.name || campaign.templateId }}</p>
+      <p><strong>Tags:</strong> {{ campaign.selectedTags?.join(', ') }}</p>
+      <p><strong>Audience Targeted:</strong> {{ campaign.audienceTargeted }}</p>
+      <p *ngIf="campaign.launchedAt"><strong>Launched at:</strong> {{ campaign.launchedAt | date:'medium' }}</p>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="text-center text-gray-500 py-6">Loading…</div>
+  </ng-template>
+</div>

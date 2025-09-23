@@ -1,0 +1,77 @@
+<div [ngClass]="{ 'w-64': isOpen, 'w-20': !isOpen, 'hidden sm:flex': true }"
+     class="fixed top-0 left-0 h-screen bg-[var(--oh-navy)] text-[var(--oh-peach)]
+            transition-all duration-300 flex-col shadow-lg z-50">
+
+<!-- Sidebar -->
+<div [ngClass]="{ 'w-64': isOpen, 'w-20': !isOpen }"
+     class="fixed top-0 left-0 h-screen bg-[var(--oh-navy)] text-[var(--oh-peach)]
+            transition-all duration-300 flex flex-col shadow-lg z-50">
+
+  <!-- Toggle Button -->
+  <button (click)="onToggle()"
+          class="absolute top-4 left-4 p-2 rounded-full shadow-md transition-colors
+                 bg-[var(--oh-primary)] hover:bg-[var(--oh-primary-dark)] hover:text-[var(--oh-peach)]">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
+         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <!-- Logo -->
+  <div class="flex items-center justify-center mt-16 mb-6">
+    <span *ngIf="isOpen" class="text-2xl font-bold text-[var(--oh-primary)] tracking-wide">
+      OutreachHub
+    </span>
+    <span *ngIf="!isOpen" class="text-2xl font-bold text-[var(--oh-primary)]">OH</span>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 overflow-y-auto px-3">
+    <ul class="space-y-1">
+      <li *ngFor="let item of menuItems">
+        <a [routerLink]="item.link"
+           routerLinkActive="oh-nav-active"
+           [routerLinkActiveOptions]="{ exact: true }"
+           class="group flex items-center gap-3 px-3 py-2 rounded-lg transition-all
+                  hover:bg-[color-mix(in_srgb,var(--oh-primary) 35%, transparent)]
+                  hover:text-[var(--oh-navy)]">
+
+          <!-- Collapsed chip -->
+          <span *ngIf="!isOpen"
+                class="flex items-center justify-center w-9 h-9 rounded-full
+                       bg-[var(--oh-primary)] text-[var(--oh-navy)] font-bold">
+            {{ item.name.charAt(0) }}
+          </span>
+
+          <!-- Expanded label -->
+          <span *ngIf="isOpen" class="font-medium truncate">
+            {{ item.name }}
+          </span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Footer / version -->
+  <div class="p-3 text-xs text-[color-mix(in_srgb,var(--oh-peach) 75%, transparent)]">
+    v1.0 • © OutreachHub
+  </div>
+</div>
+</div>
+<!-- Mobile Drawer (hidden on sm+) -->
+<div class="sm:hidden">
+  <button (click)="mobileOpen = !mobileOpen"
+          class="fixed top-4 left-4 z-50 bg-[var(--oh-primary)] p-2 rounded-lg">
+    ☰
+  </button>
+
+  <div *ngIf="mobileOpen"
+       class="fixed inset-0 bg-[var(--oh-navy)] text-[var(--oh-peach)] p-6 z-40">
+    <button (click)="mobileOpen = false" class="mb-6">Close ✕</button>
+    <ul class="space-y-4">
+      <li *ngFor="let item of menuItems">
+        <a [routerLink]="item.link" (click)="mobileOpen = false">{{ item.name }}</a>
+      </li>
+    </ul>
+  </div>
+</div>

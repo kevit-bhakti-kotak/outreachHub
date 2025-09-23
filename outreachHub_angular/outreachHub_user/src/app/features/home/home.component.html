@@ -1,0 +1,114 @@
+<div class="home-container space-y-8">
+  <!-- Welcome + Date Filter -->
+  <section class="welcome bg-white shadow rounded-lg p-6 flex flex-col md:flex-row md:justify-between md:items-center">
+    <p class="text-sm text-gray-600 mb-4 md:mb-0">
+      Here’s your latest workspace analytics overview.
+    </p>
+
+    <!-- Date Range Filter -->
+    <div class="flex items-center gap-2">
+      <input type="date" [(ngModel)]="startDate" class="border rounded px-2 py-1 text-sm" />
+      <span class="text-gray-500">to</span>
+      <input type="date" [(ngModel)]="endDate" class="border rounded px-2 py-1 text-sm" />
+      <button (click)="applyDateFilter()" class="bg-[#EB8A90] text-white px-3 py-1 rounded hover:bg-[#d7707d] text-sm">
+        Apply
+      </button>
+    </div>
+  </section>
+
+  <!-- Charts Section -->
+  <section class="charts grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Campaigns per Day -->
+    <div class="chart-card bg-white shadow rounded-lg p-4">
+      <h3 class="font-semibold text-[#031927] mb-3">Campaigns Per Day</h3>
+      <div class="h-64">
+        <canvas baseChart
+                [data]="campaignsChartData"
+                [options]="campaignsChartOptions"
+                [type]="campaignsChartType">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Messages Sent by Type -->
+    <div class="chart-card bg-white shadow rounded-lg p-4">
+      <h3 class="font-semibold text-[#031927] mb-3">Messages Sent by Type</h3>
+      <div class="h-64">
+        <canvas baseChart
+                [data]="messagesChartData"
+                [options]="messagesChartOptions"
+                [type]="messagesChartType">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Contacts Reached -->
+    <div class="chart-card bg-white shadow rounded-lg p-4">
+      <h3 class="font-semibold text-[#031927] mb-3">Contacts Reached</h3>
+      <div class="h-64">
+        <canvas baseChart
+                [data]="contactsChartData"
+                [options]="contactsChartOptions"
+                [type]="contactsChartType">
+        </canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tables Section -->
+  <section class="tables grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Recent Campaigns -->
+    <div class="table-card bg-white shadow rounded-lg p-4 overflow-x-auto">
+      <h3 class="font-semibold text-[#031927] mb-3">Recent Campaigns</h3>
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="bg-gray-100 text-left">
+            <th class="p-2">Campaign</th>
+            <th class="p-2">Tags</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of recentCampaigns" class="border-b">
+            <td class="p-2">{{ c.name }}</td>
+            <td class="p-2">
+              <div class="flex flex-wrap gap-1">
+                <span *ngFor="let tag of c.tags"
+                      class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                  {{ tag }}
+                </span>
+                <span *ngIf="c.tags.length === 0"
+                      class="text-gray-400 text-sm italic">
+                  No tags
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Top Tags -->
+    <div class="table-card bg-white shadow rounded-lg p-4 overflow-x-auto">
+      <h3 class="font-semibold text-[#031927] mb-3">Top Tags by Contacts</h3>
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="bg-gray-100 text-left">
+            <th class="p-2">Tag</th>
+            <th class="p-2">Contact Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of topTags" class="border-b">
+            <td class="p-2">{{ t.tag }}</td>
+            <td class="p-2">{{ t.count }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer text-center text-sm text-gray-500 py-6">
+    &copy; 2025 OutreachHub. All rights reserved.
+  </footer>
+</div>

@@ -1,0 +1,40 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="max-w-lg mx-auto p-6 bg-white shadow rounded-xl space-y-6">
+  <h2 class="text-xl font-semibold text-gray-800">
+    {{ isEdit ? 'Edit Template' : 'Create Template' }}
+  </h2>
+
+  <!-- Name -->
+  <div>
+    <label class="block text-sm font-medium">Template Name</label>
+    <input formControlName="name" type="text" class="mt-1 block w-full border rounded-md p-2" />
+  </div>
+
+  <!-- Type -->
+  <div>
+    <label class="block text-sm font-medium">Type</label>
+    <select formControlName="type" class="mt-1 block w-full border rounded-md p-2">
+      <option value="Text">Text</option>
+      <option value="Text-Image">Text + Image</option>
+    </select>
+  </div>
+
+  <!-- Message group -->
+  <div formGroupName="message">
+    <div>
+      <label class="block text-sm font-medium">Message Text</label>
+      <textarea formControlName="text" rows="3" class="mt-1 block w-full border rounded-md p-2"></textarea>
+    </div>
+
+    <div *ngIf="form.get('type')?.value === 'Text-Image'">
+      <label class="block text-sm font-medium">Image URL</label>
+      <input formControlName="imageUrl" type="text" class="mt-1 block w-full border rounded-md p-2" />
+    </div>
+  </div>
+
+  <div class="flex justify-end space-x-3">
+    <button type="button" class="px-4 py-2 bg-gray-200 rounded-lg" (click)="cancel()">Cancel</button>
+    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg">
+      {{ isEdit ? 'Update' : 'Create' }}
+    </button>
+  </div>
+</form>

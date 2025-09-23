@@ -1,0 +1,81 @@
+<div>
+  <h2 class="text-xl font-semibold text-[var(--oh-navy)] mb-4">
+    {{ mode === 'edit' ? 'Edit Campaign' : mode === 'view' ? 'View Campaign' : 'Create Campaign' }}
+  </h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+
+    <!-- Name -->
+    <div>
+      <label class="block text-sm font-medium">Name</label>
+      <input formControlName="name"
+             class="w-full border border-[var(--oh-border)] rounded-lg px-3 py-2"/>
+    </div>
+
+    <!-- Template -->
+    <div>
+      <label class="block text-sm font-medium">Message Template</label>
+      <select formControlName="templateId"
+              class="mt-1 block w-full border border-[var(--oh-border)] rounded-md p-2">
+        <option value="" disabled>Select template</option>
+        <option *ngFor="let t of templates" [value]="t._id">{{ t.name }}</option>
+      </select>
+      <div *ngIf="templates.length === 0" class="text-xs text-gray-500 mt-1">
+        No templates in this workspace.
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div class="relative">
+      <button type="button"
+              class="w-full border border-[var(--oh-border)] rounded-md p-2 text-left"
+              (click)="tagsDropdownOpen = !tagsDropdownOpen"
+              [disabled]="mode==='view'">
+        {{ form.value.selectedTags.length ? form.value.selectedTags.join(', ') : 'Select tags' }}
+      </button>
+
+      <div *ngIf="tagsDropdownOpen"
+           class="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow z-10 max-h-60 overflow-auto">
+        <div *ngFor="let tag of availableTags" class="p-2 hover:bg-gray-100">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox"
+                   [checked]="form.value.selectedTags.includes(tag)"
+                   (change)="toggleTag(tag, $event)"
+                   [disabled]="mode==='view'" />
+            {{ tag }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audience -->
+    <div>
+      <label class="block text-sm font-medium">Audience Targeted</label>
+      <p class="mt-1 font-medium">{{ audienceTargeted }}</p>
+      <p class="text-xs text-gray-400">Calculated from selected tags.</p>
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label class="block text-sm font-medium">Description</label>
+      <textarea formControlName="description" rows="3"
+                class="mt-1 block w-full border border-[var(--oh-border)] rounded-md p-2"></textarea>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex justify-end gap-3 mt-6">
+      <button type="button"
+              (click)="onCancel()"
+              class="px-4 py-2 rounded-lg border border-[var(--oh-border)] bg-[var(--oh-surface)]">
+        Cancel
+      </button>
+
+      <button *ngIf="mode!=='view'"
+              type="submit"
+              [disabled]="form.invalid"
+              class="px-4 py-2 rounded-lg text-white bg-[var(--oh-primary)] hover:bg-[var(--oh-primary-dark)]">
+        {{ mode === 'edit' ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,49 @@
+<header class="oh-header fixed top-0 left-0 right-0 z-40 transition-all duration-300"
+        [class.scrolled]="isScrolled">
+
+  <div
+    [ngClass]="{ 'ml-64': isSidebarOpen, 'ml-20': !isSidebarOpen }"
+    class="oh-header__inner transition-all duration-300 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+
+    <!-- Left: Welcome + date/time -->
+    <div class="flex flex-col leading-tight min-w-0">
+      <div class="oh-header__greeting text-sm sm:text-base font-semibold text-[var(--oh-navy)] truncate">
+        Welcome, {{ userName }}
+      </div>
+      <div class="oh-header__datetime text-xs sm:text-sm text-[var(--oh-text-2)] truncate">
+        {{ currentDate | date:'fullDate' }} • {{ currentTime }}
+      </div>
+    </div>
+
+    <!-- Center: Workspace dropdown -->
+    <div class="flex-1 flex justify-center">
+      <select
+        id="workspaceSelect"
+        class="workspace-select"
+        [ngModel]="selectedWorkspaceId"
+        (ngModelChange)="onWorkspaceChangeById($event)"
+      >
+        <option *ngFor="let ws of workspaces"
+                [value]="ws.workspaceId?._id ?? ws.workspaceId ?? ws._id ?? ws.id">
+          {{ ws.workspaceId?.name ?? ws.name ?? (ws.workspaceId ?? ws._id ?? ws.id) }}
+          ({{ ws.role }})
+        </option>
+      </select>
+    </div>
+
+    <!-- Right: Logout -->
+    <div class="flex items-center">
+      <button (click)="logout()"
+              class="logout-btn"
+              aria-label="Logout">
+        <span class="hidden md:inline">Logout</span>
+        <!-- icon for mobile -->
+        <svg class="md:hidden h-5 w-5" viewBox="0 0 24 24" fill="none">
+          <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</header>

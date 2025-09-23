@@ -1,0 +1,202 @@
+<div class="campaigns-wrapper p-4">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h2 class="text-2xl font-semibold text-[var(--oh-text)]">Campaigns</h2>
+      <p class="text-sm text-[var(--oh-text-2)]">
+        Workspace:
+        <strong *ngIf="currentWorkspace">
+          {{ currentWorkspace.name || currentWorkspace.workspaceId }}
+        </strong>
+        <span *ngIf="!currentWorkspace" class="text-xs text-gray-500">
+          No workspace selected
+        </span>
+      </p>
+    </div>
+    <button
+      (click)="openCreate()"
+      [disabled]="!isEditor()"
+      class="bg-[var(--oh-primary)] text-white px-4 py-2 rounded-lg font-medium shadow hover:shadow-md hover:bg-[var(--oh-primary-dark)] transition disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+    >
+      ＋ Create Campaign
+    </button>
+  </div>
+  <!-- Campaigns Table -->
+  <div class="overflow-x-auto rounded-xl shadow mt-4">
+    <table
+      class="w-full border border-[var(--oh-border)] rounded-lg overflow-hidden"
+    >
+      <thead class="bg-[var(--oh-peach)] text-[var(--oh-primary-dark)]">
+        <tr>
+          <th class="px-4 py-2 text-left">Name</th>
+          <th class="px-4 py-2 text-left">Status</th>
+          <th class="px-4 py-2 text-left">Template</th>
+          <th class="px-4 py-2 text-left">Tags</th>
+          <th class="px-4 py-2 text-left">Audience</th>
+          <th class="px-4 py-2 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let c of campaigns"
+          class="border-b border-[var(--oh-border)] hover:bg-[rgba(252,223,209,0.3)] transition"
+        >
+          <!-- Name -->
+          <td class="px-4 py-2 font-medium">
+            {{ c.name }}
+            <div class="text-xs text-gray-500">{{ c.description }}</div>
+          </td>
+
+          <!-- Status -->
+          <td class="px-4 py-2">
+            <span
+              class="px-2 py-1 rounded-full text-xs"
+              [ngClass]="{
+                'bg-[var(--oh-primary)]/20 text-[var(--oh-primary-dark)]':
+                  c.status === 'Draft',
+                'bg-green-100 text-green-700': c.status === 'Running',
+                'bg-gray-200 text-gray-700': c.status === 'Completed'
+              }"
+            >
+              {{ c.status }}
+            </span>
+          </td>
+
+          <!-- Template -->
+          <td class="px-4 py-2 text-sm">{{ getTemplateName(c) }}</td>
+
+          <!-- Tags -->
+          <td class="px-4 py-2">
+            <ng-container *ngIf="c.selectedTags?.length; else noTags">
+              <span
+                *ngFor="let t of c.selectedTags"
+                class="inline-block bg-[var(--oh-peach)] text-[var(--oh-primary-dark)] text-xs font-medium px-3 py-1 rounded-full mr-2 shadow-sm"
+              >
+                {{ t }}
+              </span>
+            </ng-container>
+            <ng-template #noTags>
+              <span class="text-xs text-gray-400">—</span>
+            </ng-template>
+          </td>
+
+          <!-- Audience -->
+          <td class="px-4 py-2 text-sm">
+            <button (click)="viewAudience(c)" class="text-blue-600 underline">
+              {{ c.audienceCount ?? 0 }}
+            </button>
+          </td>
+
+          <!-- Actions -->
+          <td class="px-4 py-2 text-right space-x-2">
+            <!-- copy -->
+<button
+  (click)="copyCampaign(c)"
+  [disabled]="!isEditor()"
+  class="p-2 rounded-lg text-white shadow bg-[var(--oh-navy)] hover:bg-[var(--oh-teal)] transition"
+  title="Copy"
+>
+  <ng-icon name="heroDocumentDuplicate" class="w-4 h-4"></ng-icon>
+</button>
+
+            <!-- Launch -->
+            <button
+              (click)="launchCampaign(c)"
+              [disabled]="c.status !== 'Draft'|| !isEditor()"
+              class="p-2 rounded-lg text-white shadow bg-[var(--oh-primary-dark)] hover:bg-[var(--oh-primary)] transition disabled:bg-gray-300"
+              title="Launch"
+            >
+              <ng-icon name="heroRocketLaunch" class="w-4 h-4"></ng-icon>
+            </button>
+
+            <!-- View -->
+            <button
+              (click)="openView(c)"
+              class="p-2 rounded-lg text-white shadow bg-[var(--oh-navy)] hover:bg-[var(--oh-teal)] transition"
+              title="View"
+            >
+              <ng-icon name="heroEye" class="w-4 h-4"></ng-icon>
+            </button>
+
+            <!-- Edit -->
+            <button
+              (click)="openEdit(c)"
+              [disabled]="c.status !== 'Draft' || !isEditor()"
+              class="p-2 rounded-lg text-white shadow bg-[var(--oh-navy)] hover:bg-[var(--oh-teal)] transition disabled:bg-gray-300"
+              title="Edit"
+            >
+              <ng-icon name="heroPencil" class="w-4 h-4"></ng-icon>
+            </button>
+
+            <!-- Delete -->
+            <button
+              (click)="deleteCampaign(c._id)"
+              [disabled]="!isEditor()"
+              class="p-2 rounded-lg text-white shadow bg-[var(--oh-primary-dark)] hover:bg-[var(--oh-primary)] transition disabled:bg-gray-300"
+              title="Delete"
+            >
+              <ng-icon name="heroTrash" class="w-4 h-4"></ng-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Campaign Form Modal -->
+  <div
+    *ngIf="showForm"
+    class="fixed inset-0 flex items-center justify-center bg-black/50"
+  >
+    <div
+      class="bg-white rounded-xl shadow-lg w-[500px] max-h-[90vh] overflow-y-auto p-6"
+    >
+      <app-campaign-form
+        [campaign]="selectedCampaign"
+        [mode]="formMode || 'create'"
+        (save)="onFormSave()"
+        (cancel)="closeForm()"
+      >
+      </app-campaign-form>
+    </div>
+  </div>
+  <!-- Audience Modal -->
+  <div
+    *ngIf="audienceModalOpen"
+    class="fixed inset-0 flex items-center justify-center bg-black/50"
+  >
+    <div
+      class="bg-white rounded-xl shadow-lg w-[500px] max-h-[90vh] overflow-y-auto p-6"
+    >
+      <app-audience-modal
+        [open]="audienceModalOpen"
+        [contacts]="audienceContacts"
+        (close)="closeAudienceModal()"
+      >
+      </app-audience-modal>
+    </div>
+  </div>
+  <!-- Empty State -->
+  <div *ngIf="!campaigns?.length" class="text-center py-20 text-gray-500">
+    No campaigns found for this workspace.
+  </div>
+  <!-- Pagination -->
+  <div class="flex items-center justify-between mt-4">
+    <button
+      (click)="onPageChange(false)"
+      [disabled]="page <= 1"
+      class="px-3 py-1 border border-[var(--oh-border)] rounded-lg text-[var(--oh-text-2)] bg-[var(--oh-surface)] hover:bg-[var(--oh-peach)] hover:text-[var(--oh-primary-dark)] transition disabled:opacity-50"
+    >
+      ◀ Previous
+    </button>
+    <span class="text-[var(--oh-text)] font-medium">
+      Page {{ page }} of {{ Math.ceil(total / limit) || 1 }}
+    </span>
+    <button
+      (click)="onPageChange(true)"
+      [disabled]="page >= Math.ceil(total / limit)"
+      class="px-3 py-1 border border-[var(--oh-border)] rounded-lg text-[var(--oh-text-2)] bg-[var(--oh-surface)] hover:bg-[var(--oh-peach)] hover:text-[var(--oh-primary-dark)] transition disabled:opacity-50"
+    >
+      Next ▶
+    </button>
+  </div>
+</div>

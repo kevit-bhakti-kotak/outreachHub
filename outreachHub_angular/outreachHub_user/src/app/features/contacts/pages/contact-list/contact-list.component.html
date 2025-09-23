@@ -1,0 +1,116 @@
+<div class="contacts-wrapper p-4">
+  <!-- Search + Add Contact -->
+  <div class="flex items-center justify-between mb-4">
+    <!-- Search -->
+    <input
+      type="text"
+      class="border border-[var(--oh-border)] rounded-lg px-3 py-2 w-1/3 text-[var(--oh-text)] focus:outline-none focus:ring-2 focus:ring-[var(--oh-primary)]"
+      placeholder="Search contacts..."
+      (input)="onSearch($any($event.target).value)"
+    />
+
+    <!-- Add Contact Button -->
+    <button
+      (click)="onCreate()"
+      class="bg-[var(--oh-primary)] text-white px-4 py-2 rounded-lg font-medium shadow hover:shadow-md hover:bg-[var(--oh-primary-dark)] transition duration-200 ease-in-out"
+    >
+      ＋ Add Contact
+    </button>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="text-[var(--oh-primary-dark)] font-medium mb-2">
+    {{ error }}
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table
+      class="w-full border border-[var(--oh-border)] rounded-lg overflow-hidden shadow mt-4"
+    >
+      <thead class="bg-[var(--oh-peach)] text-[var(--oh-primary-dark)]">
+        <tr>
+          <th class="px-4 py-2 text-left rounded-tl-lg">Name</th>
+          <th class="px-4 py-2 text-left">Phone</th>
+          <th class="px-4 py-2 text-left">Tags</th>
+          <th class="px-4 py-2 text-right rounded-tr-lg">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let c of contacts"
+          class="border-b border-[var(--oh-border)] hover:bg-[rgba(252,223,209,0.3)] transition"
+        >
+          <td class="px-4 py-2 text-[var(--oh-text)]">{{ c.name }}</td>
+          <td class="px-4 py-2 text-[var(--oh-text)]">{{ c.phoneNumber }}</td>
+
+          <!-- Tags -->
+          <td class="px-4 py-2">
+            <span
+              *ngFor="let t of c.tags"
+              class="inline-block bg-[var(--oh-peach)] text-[var(--oh-primary-dark)] text-xs font-medium px-3 py-1 rounded-full mr-2 shadow-sm"
+            >
+              {{ t }}
+            </span>
+          </td>
+
+          <!-- Actions -->
+          <td class="px-4 py-2 text-right space-x-3">
+            <!-- Edit -->
+            <button
+              (click)="onEdit(c)"
+              [disabled]="!isOwner(c)"
+              class="px-3 py-1 rounded-lg font-medium transition duration-200 ease-in-out text-white shadow bg-[#031927] hover:bg-[#007C91] disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none"
+            >
+              Edit
+            </button>
+
+            <!-- Delete -->
+            <button
+              (click)="onDelete(c)"
+              [disabled]="!isOwner(c)"
+              class="px-3 py-1 rounded-lg font-medium transition duration-200 ease-in-out text-white shadow bg-[#820933] hover:bg-[#EB8A90] disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Contact Form Modal -->
+  <div
+    *ngIf="showForm"
+    class="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+  >
+    <app-contact-form
+      [contact]="selectedContact"
+      (save)="onFormSave($event)"
+      (cancel)="onFormCancel()"
+    ></app-contact-form>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex items-center justify-between mt-4">
+    <button
+      (click)="onPageChange(false)"
+      [disabled]="page <= 1"
+      class="px-3 py-1 border border-[var(--oh-border)] rounded-lg text-[var(--oh-text-2)] bg-[var(--oh-surface)] hover:bg-[var(--oh-peach)] hover:text-[var(--oh-primary-dark)] transition disabled:opacity-50"
+    >
+      ◀ Previous
+    </button>
+
+    <span class="text-[var(--oh-text)] font-medium">
+      Page {{ page }} of {{ Math.ceil(total / limit) || 1 }}
+    </span>
+
+    <button
+      (click)="onPageChange(true)"
+      [disabled]="page >= Math.ceil(total / limit)"
+      class="px-3 py-1 border border-[var(--oh-border)] rounded-lg text-[var(--oh-text-2)] bg-[var(--oh-surface)] hover:bg-[var(--oh-peach)] hover:text-[var(--oh-primary-dark)] transition disabled:opacity-50"
+    >
+      Next ▶
+    </button>
+  </div>
+</div>
