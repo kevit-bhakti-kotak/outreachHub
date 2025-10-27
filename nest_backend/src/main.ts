@@ -22,7 +22,7 @@ app.useGlobalPipes(
     allowedHeaders: [
       'Content-Type',
       'Authorization',
-      'X-Workspace-Id', // ✅ important
+      'X-Workspace-Id',
     ],
   });
 
