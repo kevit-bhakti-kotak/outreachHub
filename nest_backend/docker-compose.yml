@@ -1,0 +1,13 @@
+services:
+  server:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+    ports:
+      - 2000:2000
+    env_file:
+      - .env
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
