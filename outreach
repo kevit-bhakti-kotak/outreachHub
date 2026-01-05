@@ -1,0 +1,35 @@
+color pallate suggestions:
+
+Primary Colors
+
+#EB8A90 → Coral Pink (CTA buttons, highlights)
+
+#820933 → Deep Maroon (headers, accents, active states)
+
+Secondary Colors
+
+#031927 → Deep Navy (sidebar background, text on light bg)
+
+#007C91 → Teal Blue (charts, links, alternate accents)
+
+Backgrounds & Surfaces
+
+#FCDFD1 → Soft Peach (main background, sections)
+
+#F9F9FB → Light Gray-White (cards, containers)
+
+Typography & Neutral Shades
+
+#1C1C1E → Primary text
+
+#555770 → Secondary text
+
+#BDC5D1 → Borders, dividers, subtle UI
+
+Status Colors
+
+#4CAF50 → Success
+
+#FFC107 → Warning
+
+#F44336 → Error
